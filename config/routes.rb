@@ -2,6 +2,7 @@ Rails.application.routes.draw do
 
   scope '/api' do
     resources :teams, defaults: {format: :json}
+    resources :games, defaults: {format: :json}
   end
 
   # The priority is based upon order of creation: first created -> highest priority.
