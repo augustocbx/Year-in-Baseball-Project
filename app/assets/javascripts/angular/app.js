@@ -1,0 +1,1 @@
+var baseballApp = angular.module('baseballApp', []);
