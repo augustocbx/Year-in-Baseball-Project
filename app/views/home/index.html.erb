@@ -1,7 +1,9 @@
 <div ng-app="baseballApp">
 
 	<div ng-controller="BaseballController">
-		{{games}}
+		<div ng-repeat="g in games">
+			{{g.game_id}}
+		</div>
 	</div>
 
 </div>
