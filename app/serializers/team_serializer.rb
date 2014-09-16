@@ -1,3 +1,3 @@
 class TeamSerializer < ActiveModel::Serializer
-  attributes :name, :city, :state, :league, :team_id
+  attributes :id, :name, :city, :state, :league
 end

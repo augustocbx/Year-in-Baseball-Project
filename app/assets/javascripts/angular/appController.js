@@ -1,4 +1,4 @@
-baseballApp.controller('BaseballController', ['$scope', '$http', 'GamesData', function($scope, $http, GamesData){
+baseballApp.controller('BaseballController', ['$scope', '$http', 'GamesData', 'DaysData', function($scope, $http, GamesData, DaysData){
 
 	
 	// --- Games API --- //
@@ -12,6 +12,19 @@ baseballApp.controller('BaseballController', ['$scope', '$http', 'GamesData', fu
 	//Get games data from the API
 	GamesData.getData().then(function(json){
 		$scope.games = json.data;
+	})
+
+	// --- Days API --- //
+
+	// The days API contains information about a day for each team, in particular, the team's record and the amount of games over a .500 win percentage that team was on that day.
+
+	// This section pulls the data from the database so that it can be accessed as a scope variable.
+
+	$scope.days = [];
+
+	//Get days data from the API
+	DaysData.getData().then(function(json){
+		$scope.days = json.data;
 	})
 
 }])

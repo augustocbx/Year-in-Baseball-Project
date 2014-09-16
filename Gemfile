@@ -1,5 +1,7 @@
 source 'https://rubygems.org'
 
+# Use the D3 gem
+gem 'd3_rails'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.1.4'
