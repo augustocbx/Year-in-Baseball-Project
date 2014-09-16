@@ -12,6 +12,8 @@ baseballApp.directive("lineGraph", function($window){
 
 			// The watch functions make it so that the graph does not draw until after the data has been pulled in from the API.
 
+			// Watch Days
+
 			scope.$watch( 'days', function(){
 
 				//do not run until scope.days has data
@@ -19,6 +21,15 @@ baseballApp.directive("lineGraph", function($window){
 					drawLines();
 				};
 			});
+
+			// Watch Date
+
+			scope.$watch( 'date', function(){
+	
+				writeDate();
+
+			});
+
 
 			// --- Draw the SVG --- //
 
@@ -28,6 +39,10 @@ baseballApp.directive("lineGraph", function($window){
 			var svg = d3.select("svg")
 						.attr("width", width)
 						.attr("height", height);
+
+			// --- Date Formatting --- //
+
+			var dateFormat = d3.time.format("%d %b %Y");
 
 			// --- Color Function --- //
 
@@ -104,12 +119,16 @@ baseballApp.directive("lineGraph", function($window){
 				y.domain([-60, 60]);
 
 				// Create a clip path for the curtain and lines
-				svg.append("clipPath")
+				var clip = svg.append("clipPath")
 					.attr("id", "clip")
-					.append("rect")
-						.attr("width", width)
-						.attr("height", height);
-
+					
+				var clipRect = clip.append("rect")
+									.attr("x", 0)
+									.attr("y", 0)
+									.attr("height", height)
+									.attr("width", 0)
+									.attr("class", "curtain");
+				
 				// Draw the lines
 				var graphLine = svg.selectAll("path")
 								.data(scope.days)
@@ -124,24 +143,36 @@ baseballApp.directive("lineGraph", function($window){
 									})
 									.attr("clip-path", "url(#clip)");
 
-				// Create the curtain that animates the graph
-				var curtain = svg.append('rect')
-								.attr("x", -1 * width)
-								.attr("y", -1 * height)
-								.attr("height", height)
-								.attr("width", width)
-								.attr("transform", "rotate(180)")
-								.attr("class", "curtain")
-								.style("fill", "#fff");
 
 				// Create the transition for the curtain
 				var t = svg.transition()
 								.delay(0)
-								.duration(154000)
+								.duration(175000)
 								.ease("linear");
 
-				t.select("rect.curtain")
-								.attr("width", 0);
+				t.select("#clip").select("rect")
+								.attr("width", width);
+
+
+			};
+
+			function writeDate(){
+
+				svg.selectAll("g.date").select("text").remove();
+
+				// Add dates to the bottom of the graph
+				var dateGroup = svg
+								.append("g")
+								.attr("class", "date")
+								.attr("height", "50px")
+
+				var dateText = dateGroup.append("text")
+								.text(dateFormat(scope.date))
+								.attr("font-size", 36)
+								.attr("font-family", "Oswald")
+								.attr("fill", "rgba(0,0,0,.7)")
+								.attr("text-anchor", "end")
+								.attr("transform", "translate(" + (width - 100) + "," + (height - 50) + ")")
 
 			};
 

@@ -1,4 +1,4 @@
-baseballApp.controller('BaseballController', ['$scope', '$http', 'GamesData', 'DaysData', function($scope, $http, GamesData, DaysData){
+baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'GamesData', 'DaysData', function($scope, $http, $timeout, GamesData, DaysData){
 
 	
 	// --- Games API --- //
@@ -25,6 +25,37 @@ baseballApp.controller('BaseballController', ['$scope', '$http', 'GamesData', 'D
 	//Get days data from the API
 	DaysData.getData().then(function(json){
 		$scope.days = json.data;
-	})
+	});
+
+	// --- Date Counter --- //
+
+	// The date counter changes the date plus one day every second. The date is displayed on the graph.
+
+	var daySeconds = 24 * 60 * 60 * 1000;
+
+	$scope.date = new Date(1908, 03, 14);
+
+	function addDay(date){
+		var nextDayTime = date.getTime() + daySeconds;
+		var year = new Date(nextDayTime).getFullYear();
+		var month = new Date(nextDayTime).getMonth();
+		var day = new Date(nextDayTime).getDate();
+		return new Date(year, month, day);
+	};
+
+	endDate = new Date(1908, 09, 08);
+	
+	updateDate();
+	
+	function updateDate(){
+		if ($scope.date.getTime() < endDate.getTime()){
+			$timeout(function(){
+				$scope.date = addDay($scope.date);
+				$scope.$digest();
+				updateDate();
+			}, 1000);
+		}
+	}
+	
 
 }])
