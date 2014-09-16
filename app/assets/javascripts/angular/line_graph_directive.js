@@ -29,6 +29,36 @@ baseballApp.directive("lineGraph", function($window){
 						.attr("width", width)
 						.attr("height", height);
 
+			// --- Color Function --- //
+
+			// Color the lines according to their teams
+
+			function colorTeam(data){
+				if (data.id == "BSN"){
+					return "rgba(245,170,26,1)"
+				}
+				else if (data.id == "BRO"){
+					return "rgba(11,72,107,1)"
+				}
+				else if (data.id == "CHC"){
+					return "rgba(50,124,203,1)"
+				}
+				else if (data.id == "CIN"){
+					return "rgba(206,18,13,1)"
+				}
+				else if (data.id == "NYG"){
+					return "rgba(255,102,0,1)"
+				}
+				else if (data.id == "PHI"){
+					return "rgba(0,0,0,1)"
+				}
+				else if (data.id == "PIT"){
+					return "rgba(255,221,0,1)"
+				}
+				else if (data.id == "STL"){
+					return "rgba(128,15,37,1)"
+				}
+			};
 			
 
 			// --- Draw lines --- //
@@ -50,7 +80,6 @@ baseballApp.directive("lineGraph", function($window){
 
 				// Line function to turn data into lines
 				var line = d3.svg.line()
-								.interpolate("basis")
 								.x(function(d){
 									return x(d.date);
 								})
@@ -72,18 +101,47 @@ baseballApp.directive("lineGraph", function($window){
 
 				// Set the x and y domains
 				x.domain([minX, maxX]);
-				y.domain([-50, 50]);
+				y.domain([-60, 60]);
+
+				// Create a clip path for the curtain and lines
+				svg.append("clipPath")
+					.attr("id", "clip")
+					.append("rect")
+						.attr("width", width)
+						.attr("height", height);
 
 				// Draw the lines
 				var graphLine = svg.selectAll("path")
 								.data(scope.days)
 								.enter()
 								.append("path")
-								.attr("d", function(d){
+									.attr("d", function(d){
 									return line(d.days);
-								})
-								.style("fill", "none")
-								.style("stroke", "red");
+									})
+									.style("fill", "none")
+									.style("stroke", function(d){
+									return colorTeam(d);
+									})
+									.attr("clip-path", "url(#clip)");
+
+				// Create the curtain that animates the graph
+				var curtain = svg.append('rect')
+								.attr("x", -1 * width)
+								.attr("y", -1 * height)
+								.attr("height", height)
+								.attr("width", width)
+								.attr("transform", "rotate(180)")
+								.attr("class", "curtain")
+								.style("fill", "#fff");
+
+				// Create the transition for the curtain
+				var t = svg.transition()
+								.delay(0)
+								.duration(154000)
+								.ease("linear");
+
+				t.select("rect.curtain")
+								.attr("width", 0);
 
 			};
 
