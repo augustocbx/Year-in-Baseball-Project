@@ -12,6 +12,8 @@ baseballApp.directive("gbGraph", function($window){
 
 			// The watch functions make it so that the graph does not draw until after the data has been pulled in from the API.
 
+			// Watch days to initialize graphs
+
 			scope.$watch( 'days', function(){
 
 				if (scope.days.length){
@@ -22,6 +24,8 @@ baseballApp.directive("gbGraph", function($window){
 				}
 
 			});
+
+			// Watch date to update sliders			
 
 			scope.$watch( 'date', function(){
 
@@ -39,31 +43,41 @@ baseballApp.directive("gbGraph", function($window){
 						.attr("height", height);
 
 
+			// --- Draw the Slider Graph --- //
+
 			function drawGraph(){
 
-				svg.append("rect")
+				svg.selectAll("rect")
+					.data(scope.days)
+					.enter()
+					.append("rect")
 					.attr("width", 6)
 					.attr("height", height)
-					.attr("x", 30)
+					.attr("x", function(d,i){
+						return i * (width/scope.days.length) + 10
+					})
 					.attr("fill", "black");
 			};
 
+			// --- Draw the Circles --- //
+
 			function drawCircle(){
 
-				var pit = scope.days.filter(function(d){
-					return d.id == "PIT";
-				});
-
+				
 				svg.selectAll("circle.team")
-					.data(pit)
+					.data(scope.days)
 					.enter()
 					.append("circle")
 					.attr("class", "team")
 					.attr("cy", height/2)
-					.attr("cx", 33)
+					.attr("cx", function(d, i){
+						return i * (width/scope.days.length) + 13
+					})
 					.attr("r", 10)
 					.attr("fill", "blue");
 			};
+
+			// --- Update the Circles --- //
 
 			function updateCircle(){
 
@@ -76,29 +90,22 @@ baseballApp.directive("gbGraph", function($window){
 						.domain([minY, maxY])
 						.range([height, 0])
 
-				var pit = scope.days.filter(function(d){
-					return d.id == "PIT";
-				});
 
-
-
-				var dayData;
-
-				var dateObject = function(){
-					for (i=0; i<pit[0].days.length; i++){
-						date = pit[0].days[i].date;
-						if (date.getTime() == scope.date.getTime()){
-							dayData = pit[0].days[i]
-						}
-					}
-				}
-
-				dateObject();
+				var getWinsOver = function(i){
+					for (j=0; j<scope.days[i].days.length; j++){
+							date = scope.days[i].days[j].date;
+							if (date.getTime() == scope.date.getTime()){
+								return scope.days[i].days[j].wins_over
+							};
+					};
+				};
 
 				svg.selectAll("circle.team")
 					.transition()
 					.duration(750)
-					.attr("cy", y(dayData.wins_over));
+					.attr("cy", function(d,i){
+						return y(getWinsOver(i));
+					});
 			}
 		}
 	}
