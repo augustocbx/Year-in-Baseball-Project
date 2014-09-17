@@ -5,7 +5,7 @@
 baseballApp.directive("lineGraph", function($window){
 	return{
 		restrict: "EA",
-		template: "<svg width='800', height='750', id='lineGraphCanvas'></svg>",
+		template: "<svg width='700', height='750', id='lineGraphCanvas'></svg>",
 		link: function(scope, elem, attrs){
 
 			// --- Watch Functions --- //
@@ -33,10 +33,10 @@ baseballApp.directive("lineGraph", function($window){
 
 			// --- Draw the SVG --- //
 
-			var width = 800;
+			var width = 700;
 			var height = 500;
 
-			var svg = d3.select("svg")
+			var svg = d3.select("#lineGraphCanvas")
 						.attr("width", width)
 						.attr("height", height);
 
@@ -141,6 +141,7 @@ baseballApp.directive("lineGraph", function($window){
 									.style("stroke", function(d){
 									return colorTeam(d);
 									})
+									.style("stroke-width", "2px")
 									.attr("clip-path", "url(#clip)");
 
 
