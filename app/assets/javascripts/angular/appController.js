@@ -45,14 +45,12 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 
 	endDate = new Date(1908, 09, 08);
 	
-	updateDate();
-	
-	function updateDate(){
+	$scope.updateDate = function(){
 		if ($scope.date.getTime() < endDate.getTime()){
 			$timeout(function(){
 				$scope.date = addDay($scope.date);
 				$scope.$digest();
-				updateDate();
+				$scope.updateDate();
 			}, 1000);
 		}
 	}

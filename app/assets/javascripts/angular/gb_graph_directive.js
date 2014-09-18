@@ -2,111 +2,111 @@
 
 // In order to tie the games behind graph to the svg element, we build a directive for the svg element.
 
-baseballApp.directive("gbGraph", function($window){
-	return{
-		restrict: "EA",
-		template: "<svg width='400', heigh='750', id='gbGraphCanvas'></svg>",
-		link: function(scope, elem, attrs){
+// baseballApp.directive("gbGraph", function($window){
+// 	return{
+// 		restrict: "EA",
+// 		template: "<svg width='400', height='750', id='gbGraphCanvas'></svg>",
+// 		link: function(scope, elem, attrs){
 
-			// --- Watch Functions --- //
+// 			// --- Watch Functions --- //
 
-			// The watch functions make it so that the graph does not draw until after the data has been pulled in from the API.
+// 			// The watch functions make it so that the graph does not draw until after the data has been pulled in from the API.
 
-			// Watch days to initialize graphs
+// 			// Watch days to initialize graphs
 
-			scope.$watch( 'days', function(){
+// 			// scope.$watch( 'days', function(){
 
-				if (scope.days.length){
+// 			// 	if (scope.days.length){
 
-					drawGraph();
-					drawCircle();
+// 			// 		drawGraph();
+// 			// 		drawCircle();
 
-				}
+// 			// 	}
 
-			});
+// 			// });
 
-			// Watch date to update sliders			
+// 			// Watch date to update sliders			
 
-			scope.$watch( 'date', function(){
+// 			// scope.$watch( 'date', function(){
 
-				updateCircle();
+// 			// 	updateCircle();
 
-			})
+// 			// })
 
-			// --- Draw the SVG --- //
+// 			// --- Draw the SVG --- //
 
-			var width = 400;
-			var height = 350;
+// 			var width = 400;
+// 			var height = 350;
 
-			var svg = d3.select("#gbGraphCanvas")
-						.attr("width", width)
-						.attr("height", height);
+// 			var svg = d3.select("#gbGraphCanvas")
+// 						.attr("width", width)
+// 						.attr("height", height);
 
 
-			// --- Draw the Slider Graph --- //
+// 			// --- Draw the Slider Graph --- //
 
-			function drawGraph(){
+// 			function drawGraph(){
 
-				svg.selectAll("rect")
-					.data(scope.days)
-					.enter()
-					.append("rect")
-					.attr("width", 6)
-					.attr("height", height)
-					.attr("x", function(d,i){
-						return i * (width/scope.days.length) + 10
-					})
-					.attr("fill", "black");
-			};
+// 				svg.selectAll("rect")
+// 					.data(scope.days)
+// 					.enter()
+// 					.append("rect")
+// 					.attr("width", 6)
+// 					.attr("height", height)
+// 					.attr("x", function(d,i){
+// 						return i * (width/scope.days.length) + 10
+// 					})
+// 					.attr("fill", "black");
+// 			};
 
-			// --- Draw the Circles --- //
+// 			// --- Draw the Circles --- //
 
-			function drawCircle(){
+// 			function drawCircle(){
 
 				
-				svg.selectAll("circle.team")
-					.data(scope.days)
-					.enter()
-					.append("circle")
-					.attr("class", "team")
-					.attr("cy", height/2)
-					.attr("cx", function(d, i){
-						return i * (width/scope.days.length) + 13
-					})
-					.attr("r", 10)
-					.attr("fill", "blue");
-			};
+// 				svg.selectAll("circle.team")
+// 					.data(scope.days)
+// 					.enter()
+// 					.append("circle")
+// 					.attr("class", "team")
+// 					.attr("cy", height/2)
+// 					.attr("cx", function(d, i){
+// 						return i * (width/scope.days.length) + 13
+// 					})
+// 					.attr("r", 10)
+// 					.attr("fill", "blue");
+// 			};
 
-			// --- Update the Circles --- //
+// 			// --- Update the Circles --- //
 
-			function updateCircle(){
+// 			function updateCircle(){
 
-				// Find the minimum and maximum wins_over in the dataset
-				var minY = d3.min(scope.days, function(kv){ return d3.min(kv.days, function(d){ return d.wins_over; })});
-				var maxY = d3.max(scope.days, function(kv){ return d3.max(kv.days, function(d){ return d.wins_over; })});
+// 				// Find the minimum and maximum wins_over in the dataset
+// 				var minY = d3.min(scope.days, function(kv){ return d3.min(kv.days, function(d){ return d.games_behind; })});
+// 				var maxY = d3.max(scope.days, function(kv){ return d3.max(kv.days, function(d){ return d.games_behind; })});
 
-				//y scale
-				var y = d3.scale.linear()
-						.domain([minY, maxY])
-						.range([height, 0])
+// 				//y scale
+// 				var y = d3.scale.linear()
+// 						.domain([minY, maxY])
+// 						.range([0, height])
 
 
-				var getWinsOver = function(i){
-					for (j=0; j<scope.days[i].days.length; j++){
-							date = scope.days[i].days[j].date;
-							if (date.getTime() == scope.date.getTime()){
-								return scope.days[i].days[j].wins_over
-							};
-					};
-				};
+// 				var getGamesBehind = function(i){
+// 					for (j=0; j<scope.days[i].days.length; j++){
+// 							date = scope.days[i].days[j].date;
+// 							if (date.getTime() == scope.date.getTime()){
+// 								return scope.days[i].days[j].games_behind
+// 							};
+// 					};
+// 				};
 
-				svg.selectAll("circle.team")
-					.transition()
-					.duration(750)
-					.attr("cy", function(d,i){
-						return y(getWinsOver(i));
-					});
-			}
-		}
-	}
-});
+// 				svg.selectAll("circle.team")
+// 					.transition()
+// 					.duration(750)
+// 					.attr("cy", function(d,i){
+// 						return y(getGamesBehind(i));
+// 					});
+// 			}
+// 		}
+// 	}
+// });

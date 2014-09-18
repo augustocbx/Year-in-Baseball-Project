@@ -34,7 +34,7 @@ baseballApp.directive("lineGraph", function($window){
 			// --- Draw the SVG --- //
 
 			var width = 700;
-			var height = 500;
+			var height = 150;
 
 			var svg = d3.select("#lineGraphCanvas")
 						.attr("width", width)
@@ -91,7 +91,7 @@ baseballApp.directive("lineGraph", function($window){
 
 				// Set the Y Scale
 				var y = d3.scale.linear()
-							.range([height, 0]);
+							.range([0, height]);
 
 				// Line function to turn data into lines
 				var line = d3.svg.line()
@@ -99,7 +99,7 @@ baseballApp.directive("lineGraph", function($window){
 									return x(d.date);
 								})
 								.y(function(d){
-									return y(d.wins_over);
+									return y(d.place);
 								});
 
 				// Parse each date to make it a JavaScript date
@@ -116,7 +116,7 @@ baseballApp.directive("lineGraph", function($window){
 
 				// Set the x and y domains
 				x.domain([minX, maxX]);
-				y.domain([-60, 60]);
+				y.domain([0, 10]);
 
 				// Create a clip path for the curtain and lines
 				var clip = svg.append("clipPath")
@@ -144,17 +144,6 @@ baseballApp.directive("lineGraph", function($window){
 									.style("stroke-width", "2px")
 									.attr("clip-path", "url(#clip)");
 
-
-				// Create the transition for the curtain
-				var t = svg.transition()
-								.delay(0)
-								.duration(175000)
-								.ease("linear");
-
-				t.select("#clip").select("rect")
-								.attr("width", width);
-
-
 			};
 
 			function writeDate(){
@@ -176,6 +165,29 @@ baseballApp.directive("lineGraph", function($window){
 								.attr("transform", "translate(" + (width - 100) + "," + (height - 50) + ")")
 
 			};
+
+
+			// --- Click Functions --- //
+
+			document.getElementById("runSim").onclick = function(){
+				runSimulation();
+
+			};
+
+			function runSimulation(){
+
+				// Create the transition for the curtain
+				var t = svg.transition()
+								.delay(0)
+								.duration(175000)
+								.ease("linear");
+
+				t.select("#clip").select("rect")
+								.attr("width", width);
+
+				scope.updateDate();
+
+			}
 
 		}
 	}
