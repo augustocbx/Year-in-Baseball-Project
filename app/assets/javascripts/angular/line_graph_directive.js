@@ -64,38 +64,32 @@ baseballApp.directive("lineGraph", function($window){
 				return colors[scope.days.indexOf(id)];
 
 			};
-			
-
-			// --- Draw lines --- //
-
-			// This function draws the lines for the data pulled in from the API. We will call it using a $scope.$watch function.
-
-			function drawLines(){
-
-				// Parse date function to turn date into JavaScript date
-				var parseDate = d3.time.format("%Y-%m-%d").parse;
-
-				// Set the X Scale
-				var x = d3.time.scale()
-							.range([0,width-50]);
-
-				// Set the Y Scale
-				var y = d3.scale.linear()
-							.range([height, 0]);
 
 
-				// Line function to turn data into lines
-				var line = d3.svg.line()
-								.interpolate("basis")
-								.x(function(d){
-									return x(d.date);
-								})
-								.y(function(d){
-									return y(d.wins_over);
-								});
 
-				// Fold lines function
-				var foldLines = d3.svg.line()
+			// Parse date function to turn date into JavaScript date
+			var parseDate = d3.time.format("%Y-%m-%d").parse;
+
+			// Set the X Scale
+			var x = d3.time.scale()
+						.range([0,width-50]);
+
+			// Set the Y Scale
+			var y = d3.scale.linear()
+						.range([height, 0]);
+
+			// Line function to turn data into lines
+			var line = d3.svg.line()
+						.interpolate("basis")
+						.x(function(d){
+							return x(d.date);
+						})
+						.y(function(d){
+							return y(d.wins_over);
+						});
+
+			// Fold lines function
+			var foldLines = d3.svg.line()
 								.interpolate("basis")
 								.x(function(d){
 									return x(d.date);
@@ -104,6 +98,179 @@ baseballApp.directive("lineGraph", function($window){
 									return y(0);
 								});
 
+			// Area function to create the area under the lines
+			var area = d3.svg.area()
+							.interpolate("basis")
+							.x(function(d) { return x(d.date) })
+							.y0(height/2)
+							.y1(function(d) { return y(d.wins_over)});
+
+			// Remove the area under the lines
+			var removeArea = d3.svg.area()
+							.interpolate("basis")
+							.x(function(d) { return x(d.date) })
+							.y0(function(d) { return y(d.wins_over)})
+							.y1(function(d) { return y(d.wins_over)});
+
+
+			
+			// --- Hover Functions --- //
+
+			// Highlight Line
+
+			scope.highlightLine = function(d){
+
+				var lineId = "path#" + d.id;
+				var areaId = "path#" + d.id + "_area";
+
+
+				d3.selectAll("path.line")
+						.attr("opacity", .15);
+
+				d3.select(lineId)
+						.style("stroke-width", "8px" )
+						.attr("opacity", 1)
+						.moveToFront();
+
+				svg.append("text")
+						.datum(d)
+						.text(function(d){
+							return d.id
+						})
+						.attr("class", "teamName")
+						.attr("x", width-40)
+						.attr("y", y(d.days[d.days.length-1].wins_over) + 5)
+						.attr("font-family", "Open Sans Condensed")
+						.attr("font-size", "20px");
+
+						
+			};
+
+			// Highlight All Lines
+
+			function highlightAll(){
+
+				d3.selectAll("path.line")
+					.attr("opacity", 1)
+					.style("stroke-width", "2px");
+
+				d3.selectAll("text.teamName").remove();
+
+			};
+
+
+			// --- Click Functions --- //
+
+
+			// Click team to get data on team
+			function selectTeam(keepLine, d){
+						
+				svg.selectAll("path.line")
+							.transition()
+							.duration(1000)
+							.attr("d", function(d){
+								return (this === keepLine) ? line(d.days) : foldLines(d.days);
+							})
+							.attr("class", function(d){
+								return (this === keepLine) ? "line" : "line remove"
+							})
+							.each('end', function(){
+								svg.selectAll("path.remove").remove();
+							});
+
+				var graphArea = svg.append("path")
+										.datum(d)
+										.attr("d", function(d){
+											return removeArea(d.days)
+										})
+										.attr("class", "area")
+										.attr("id", function(d){
+											return d.id
+										})
+										.attr("fill", function(d){
+											return colorTeam(d);
+										})
+										.attr("opacity", 1)
+										.style("cursor", "pointer")
+										.on("click", function(){
+											redrawLines();
+										})
+										.transition()
+										.duration(1000)
+										.attr("d", function(d){
+											return area(d.days)
+										});
+
+						
+			};
+
+
+			// --- Redraw Lines --- //
+
+			// Click are to redraw the lines on the graph
+			function redrawLines(){
+
+				
+
+				svg.selectAll("path.area")
+							.attr("d", function(d){
+								return foldLines(d.days);
+							})
+							.transition()
+							.duration(1000)
+							.attr("d", function(d){
+								return removeArea(d.days)
+							})
+							.remove();
+
+				var graphLine = svg.selectAll("path.line")
+										.data(scope.days)
+										.enter()
+										.append("path")
+											.attr("d", function(d){
+												return foldLines(d.days)
+											})
+											.attr("class", "line")
+											.attr("id", function(d){
+												return d.id;
+											})
+											.style("fill", "none")
+											.style("stroke", function(d){
+												return colorTeam(d);
+											})
+											.on("mouseover", function(d){
+												scope.highlightLine(d);
+											})
+											.on("mouseout", function(){
+												highlightAll()
+											})
+											.on("click", function(d){
+												var keepLine = this;
+												selectTeam(keepLine, d);
+											})
+											.transition()
+											.duration(1000)
+											.attr("d", function(d){
+												return line(d.days);
+											})
+											.style("stroke-width", "2px")
+											.attr("clip-path", "url(#clip)")
+											.style("cursor", "pointer");
+
+			};
+			
+
+			// --- Initialize Functiones --- //
+			
+			
+			// ====== Draw Lines ======
+
+			// This function draws the lines for the data pulled in from the API. We will call it using a $scope.$watch function.
+
+			function drawLines(){
+
+
+				
 				// Parse each date to make it a JavaScript date
 				scope.days.forEach(function(kv){
 					kv.days.forEach(function(d){
@@ -180,7 +347,7 @@ baseballApp.directive("lineGraph", function($window){
 									.attr("clip-path", "url(#clip)")
 									.style("cursor", "pointer")	
 									.on("mouseover", function(d){
-										highlightLine(d);
+										scope.highlightLine(d);
 									})
 									.on("mouseout", function(){
 										highlightAll()
@@ -190,151 +357,9 @@ baseballApp.directive("lineGraph", function($window){
 										selectTeam(keepLine, d);
 									});
 
-				// --- Hover Functions --- //
-
-					// Highlight Line
-
-					function highlightLine(d){
-
-						var lineId = "path#" + d.id;
-						var areaId = "path#" + d.id + "_area";
-
-
-						d3.selectAll("path.line")
-								.attr("opacity", .15);
-
-						d3.select(lineId)
-								.style("stroke-width", "8px" )
-								.attr("opacity", 1)
-								.moveToFront();
-
-						svg.append("text")
-								.datum(d)
-								.text(function(d){
-									return d.id
-								})
-								.attr("class", "teamName")
-								.attr("x", width-40)
-								.attr("y", y(d.days[d.days.length-1].wins_over) + 5)
-								.attr("font-family", "Open Sans Condensed")
-								.attr("font-size", "20px");
-
-						
-						};
-
-					// Highlight All Lines
-
-					function highlightAll(){
-
-						d3.selectAll("path.line")
-							.attr("opacity", 1)
-							.style("stroke-width", "2px");
-
-						d3.selectAll("text.teamName").remove();
-
-				};
-
-				function selectTeam(keepLine, d){
-
-					// Area function to create the area under the lines
-					var area = d3.svg.area()
-						.interpolate("basis")
-						.x(function(d) { return x(d.date) })
-						.y0(height/2)
-						.y1(function(d) { return y(d.wins_over)});
-					
-					svg.selectAll("path.line")
-						.transition()
-						.duration(1000)
-						.attr("d", function(d){
-							return (this === keepLine) ? line(d.days) : foldLines(d.days);
-						})
-						.attr("class", function(d){
-							return (this === keepLine) ? "line" : "line remove"
-						})
-						.each('end', function(){
-							svg.selectAll("path.remove").remove();
-						});
-
-					var graphArea = svg.append("path")
-									.datum(d)
-									.attr("class", "area")
-									.attr("id", function(d){
-										return d.id
-									})
-									.attr("d", function(d){
-										return area(d.days)
-									})
-									.attr("fill", function(d){
-										return colorTeam(d);
-									})
-									.attr("opacity", 1)
-									.style("cursor", "pointer")
-									.on("click", function(){
-										redrawLines();
-									});
-
-					
-				};
-
-				// --- Redraw Lines --- //
-
-				function redrawLines(){
-
-					var removeArea = d3.svg.area()
-						.interpolate("basis")
-						.x(function(d) { return x(d.date) })
-						.y0(function(d) { return y(d.wins_over)})
-						.y1(function(d) { return y(d.wins_over)});
-
-					svg.selectAll("path.area")
-						.attr("d", function(d){
-							return foldLines(d.days);
-						})
-						.transition()
-						.duration(1000)
-						.attr("d", function(d){
-							return removeArea(d.days)
-						})
-						.remove();
-
-					var graphLine = svg.selectAll("path.line")
-									.data(scope.days)
-									.enter()
-									.append("path")
-										.attr("d", function(d){
-											return foldLines(d.days)
-										})
-										.attr("class", "line")
-										.attr("id", function(d){
-											return d.id;
-										})
-										.transition()
-										.duration(1000)
-										.attr("d", function(d){
-											return line(d.days);
-										})
-										.style("fill", "none")
-										.style("stroke", function(d){
-											return colorTeam(d);
-										})
-										.style("stroke-width", "2px")
-										.attr("clip-path", "url(#clip)")
-										.style("cursor", "pointer")	
-										.on("mouseover", function(d){
-											highlightLine(d);
-										})
-										.on("mouseout", function(){
-											highlightAll()
-										})
-										.on("click", function(d){
-											var keepLine = this;
-											selectTeam(keepLine, d);
-										});
-
-				};
-
 			};
+
+				
 
 			// function writeDate(){
 
