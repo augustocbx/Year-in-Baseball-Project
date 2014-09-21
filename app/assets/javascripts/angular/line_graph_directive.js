@@ -5,7 +5,7 @@
 baseballApp.directive("lineGraph", function($window){
 	return{
 		restrict: "EA",
-		template: "<svg width='800', height='600', id='lineGraphCanvas'></svg>",
+		template: "<svg width='800', height='500', id='lineGraphCanvas'></svg>",
 		link: function(scope, elem, attrs){
 
 			// --- Watch Functions --- //
@@ -34,7 +34,8 @@ baseballApp.directive("lineGraph", function($window){
 			// --- Draw the SVG --- //
 
 			var width = 800;
-			var height = 600;
+			var height = 500;
+			var topPadding = 200;
 
 			var svg = d3.select("#lineGraphCanvas")
 						.attr("width", width)
@@ -76,7 +77,7 @@ baseballApp.directive("lineGraph", function($window){
 
 			// Set the Y Scale
 			var y = d3.scale.linear()
-						.range([height, 0]);
+						.range([height, topPadding]);
 
 			// Line function to turn data into lines
 			var line = d3.svg.line()
@@ -111,7 +112,6 @@ baseballApp.directive("lineGraph", function($window){
 							.x(function(d) { return x(d.date) })
 							.y0(function(d) { return y(d.wins_over)})
 							.y1(function(d) { return y(d.wins_over)});
-
 
 			
 			// --- Hover Functions --- //
@@ -174,7 +174,7 @@ baseballApp.directive("lineGraph", function($window){
 				var area = d3.svg.area()
 							.interpolate("basis")
 							.x(function(d) { return x(d.date) })
-							.y0(height + y(maxY - minY))
+							.y0(height + y(maxY - minY) - topPadding)
 							.y1(function(d) { return y(d.wins_over)});
 						
 				svg.selectAll("path.line")
@@ -324,24 +324,6 @@ baseballApp.directive("lineGraph", function($window){
 				x.domain([minX, maxX]);
 				y.domain([minY, maxY]);
 
-				//Create a clip path for the curtain and lines
-				var clip = svg.append("clipPath")
-					.attr("id", "clip")
-					
-				var clipRect = clip.append("rect")
-									.attr("x", 0)
-									.attr("y", 0)
-									.attr("height", height)
-									.attr("width", 0)
-									.attr("class", "curtain");
-
-				var t = svg.transition()
-								.delay(0)
-								.duration(300)
-								.ease("linear");
-
-				t.select("#clip").select("rect")
-								.attr("width", width);
 
 				var graphLine = svg.selectAll("path.line")
 								.data(scope.days)
@@ -359,7 +341,6 @@ baseballApp.directive("lineGraph", function($window){
 										return colorTeam(d);
 									})
 									.style("stroke-width", "2px")
-									.attr("clip-path", "url(#clip)")
 									.style("cursor", "pointer")	
 									.on("mouseover", function(d){
 										scope.highlightLine(d);
@@ -371,6 +352,28 @@ baseballApp.directive("lineGraph", function($window){
 										var keepLine = this;
 										selectTeam(keepLine, d);
 									});
+
+				//Create a clip path for the curtain and lines
+				// var clip = svg.append("clipPath")
+				// 	.attr("id", "clip")
+				// 	.append("rect")
+				// 		.attr("width", width)
+				// 		.attr("height", height)
+					
+				svg.append("rect")
+									.attr("x", -1 * width)
+								    .attr("y", -1 * height)
+								    .attr("height", height)
+								    .attr("width", width)
+								    .attr("class", "curtain")
+								    .attr("transform", "rotate(180)")
+								    .style("fill", "#ffffff");
+
+				svg.select("rect.curtain")
+								.transition()
+								.duration(300)
+								.attr("width", 0)
+								.ease("linear");
 
 			};
 
