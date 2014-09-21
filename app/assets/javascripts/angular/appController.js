@@ -1,6 +1,18 @@
 baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'GamesData', 'DaysData', 'TeamsData', function($scope, $http, $timeout, GamesData, DaysData, TeamsData){
 
 	
+	// -------- Views -------- //
+
+
+	// Create a team view variable. Team info will show when this true;
+	$scope.teamView = false;
+
+
+
+
+	// -------- APIs -------- //
+
+
 	// --- Games API --- //
 
 	// The games API contains information about the individual games played: teams involved, date, season, score, location, etc.
@@ -14,6 +26,7 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 		$scope.games = json.data;
 	})
 
+
 	// --- Days API --- //
 
 	// The days API contains information about a day for each team, in particular, the team's record and the amount of games over a .500 win percentage that team was on that day.
@@ -26,6 +39,7 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 	DaysData.getData().then(function(json){
 		$scope.days = json.data;
 	});
+
 
 	// --- Teams API --- //
 
@@ -68,6 +82,8 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 	// }
 
 
+	// -------- Functions -------- //
+
 	// --- Current Team --- //
 
 	// When the user selects a given team, information will show on the team.
@@ -75,12 +91,17 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 	$scope.currentTeam = [];
 
 	$scope.getTeamData = function(team){
-		$scope.teams.forEach(function(t){
-			if (t.id == team.id){
-				$scope.currentTeam = t;
-			};
-		});
-		console.log($scope.currentTeam)
+		if (team){$scope.teams.forEach(
+			function(t){
+				if (t.id == team.id){
+					$scope.currentTeam = t;
+				};
+			});
+			$scope.teamView = true;
+		}
+		else if (!team){
+			$scope.teamView = false;
+		}
 	};
 	
 

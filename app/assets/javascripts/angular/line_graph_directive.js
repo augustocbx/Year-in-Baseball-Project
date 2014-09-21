@@ -228,7 +228,8 @@ baseballApp.directive("lineGraph", function($window){
 			// Click are to redraw the lines on the graph
 			function redrawLines(){
 
-				
+				scope.getTeamData();
+
 				svg.selectAll("g.areaGroup")
 							.transition()
 							.duration(1000)
