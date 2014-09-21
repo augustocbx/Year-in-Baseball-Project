@@ -18,6 +18,8 @@ baseballApp.directive("lineGraph", function($window){
 
 				//do not run until scope.days has data
 				if (scope.days.length){
+					
+					setData();
 					drawLines();
 				};
 			});
@@ -36,6 +38,7 @@ baseballApp.directive("lineGraph", function($window){
 			var width = 800;
 			var height = 500;
 			var topPadding = 200;
+			var rightPadding = 50;
 
 			var svg = d3.select("#lineGraphCanvas")
 						.attr("width", width)
@@ -73,7 +76,7 @@ baseballApp.directive("lineGraph", function($window){
 
 			// Set the X Scale
 			var x = d3.time.scale()
-						.range([0,width-50]);
+						.range([0,width-rightPadding]);
 
 			// Set the Y Scale
 			var y = d3.scale.linear()
@@ -99,19 +102,49 @@ baseballApp.directive("lineGraph", function($window){
 									return y(0);
 								});
 
-			// Area function to create the area under the lines
-			var area = d3.svg.area()
-							.interpolate("basis")
-							.x(function(d) { return x(d.date) })
-							.y0(height/2)
-							.y1(function(d) { return y(d.wins_over)});
-
 			// Remove the area under the lines
 			var removeArea = d3.svg.area()
 							.interpolate("basis")
 							.x(function(d) { return x(d.date) })
 							.y0(function(d) { return y(d.wins_over)})
 							.y1(function(d) { return y(d.wins_over)});
+
+			// Declare variables that can be accessed by functions
+			var area;
+			var daySelected;
+
+			// --- Set Data --- //
+
+			// Runs after the data loads
+
+			function setData(){
+				
+				// Parse each date to make it a JavaScript date
+				scope.days.forEach(function(kv){
+					kv.days.forEach(function(d){
+						d.date = parseDate(d.date);
+					})
+				});
+
+				// Find the minimum and maximum dates in the dataset
+				var minX = d3.min(scope.days, function(kv){ return d3.min(kv.days, function(d){ return d.date; })});
+				var maxX = d3.max(scope.days, function(kv){ return d3.max(kv.days, function(d){ return d.date; })});
+				
+				// Get minimum and maximum wins over .500
+				var minY = d3.min(scope.days, function(kv){ return d3.min(kv.days, function(d){ return d.wins_over; })});
+				var maxY = d3.max(scope.days, function(kv){ return d3.max(kv.days, function(d){ return d.wins_over; })});
+
+				// Set the x and y domains
+				x.domain([minX, maxX]);
+				y.domain([minY, maxY]);
+
+				// Set area
+				area = d3.svg.area()
+							.interpolate("basis")
+							.x(function(d) { return x(d.date) })
+							.y0(height + y(maxY - minY) - topPadding)
+							.y1(function(d) { return y(d.wins_over)});
+			};
 
 			
 			// --- Hover Functions --- //
@@ -158,6 +191,12 @@ baseballApp.directive("lineGraph", function($window){
 
 			};
 
+			// Remove individual day area on area path
+
+			function removeDayArea(){
+							svg.select("path.dayArea").remove();
+						};
+
 
 			// --- Click Functions --- //
 
@@ -168,16 +207,8 @@ baseballApp.directive("lineGraph", function($window){
 				scope.getTeamData(d);
 
 				//Find the minimum and maximum wins_over in the dataset
-				var minY = d3.min(scope.days, function(kv){ return d3.min(kv.days, function(d){ return d.wins_over; })});
-				var maxY = d3.max(scope.days, function(kv){ return d3.max(kv.days, function(d){ return d.wins_over; })});
-
 				var teamMin = d3.min(d.days, function(d){ return d.wins_over; });
 
-				var area = d3.svg.area()
-							.interpolate("basis")
-							.x(function(d) { return x(d.date) })
-							.y0(height + y(maxY - minY) - topPadding)
-							.y1(function(d) { return y(d.wins_over)});
 						
 				svg.selectAll("path.line")
 						.transition()
@@ -209,6 +240,9 @@ baseballApp.directive("lineGraph", function($window){
 										.on("click", function(){
 											redrawLines();
 										})
+										.on("mousemove", function(d){
+											getDayGames(this, d);
+										})
 										.transition()
 										.duration(1000)
 										.attr("d", function(d){
@@ -220,6 +254,53 @@ baseballApp.directive("lineGraph", function($window){
 												.duration(1000)
 												.attr("transform", "translate(0," + (height - y(teamMin)) + ")")
 										});
+
+				graphArea.on("mouseleave", function(){
+					removeDayArea();
+				});
+			};
+
+
+			// --- Mouse Move Functions --- //
+
+			function getDayGames(t, d){
+				
+				// Find date position
+					var posX = d3.mouse(t)[0];
+					
+					// Set empty data array to push dates to
+					var dayData = [];
+
+					// Find day objects to be incnluded in data
+					var dayPosition = (posX/(width-rightPadding)) * d.days.length;
+					var dayObject = d.days[Math.floor(dayPosition)]
+					var priorDayObject = d.days[Math.floor(dayPosition)-1];
+
+					if (dayObject != daySelected){
+
+						daySelected = dayObject;
+
+						// Push dates to array
+						dayData.push(priorDayObject);
+						dayData.push(dayObject);
+
+						removeDayArea();
+
+						// Build a new path using new data
+						svg.select("g.areaGroup").append("path")
+												.attr("class", "dayArea")
+												.attr("d", function(d){
+													return area(dayData)
+												})
+												.attr("fill", "rgba(255,255,255,.5")
+												.style("opacity", 1)
+												.style("cursor", "pointer")
+												.on("click", function(){
+													removeDayArea();
+													redrawLines();
+												});
+					};
+
 			};
 
 
@@ -301,28 +382,6 @@ baseballApp.directive("lineGraph", function($window){
 			// This function draws the lines for the data pulled in from the API. We will call it using a $scope.$watch function.
 
 			function drawLines(){
-
-
-				
-				// Parse each date to make it a JavaScript date
-				scope.days.forEach(function(kv){
-					kv.days.forEach(function(d){
-						d.date = parseDate(d.date);
-					})
-				});
-
-
-				// Find the minimum and maximum dates in the dataset
-				var minX = d3.min(scope.days, function(kv){ return d3.min(kv.days, function(d){ return d.date; })});
-				var maxX = d3.max(scope.days, function(kv){ return d3.max(kv.days, function(d){ return d.date; })});
-
-				//Find the minimum and maximum wins_over in the dataset
-				var minY = d3.min(scope.days, function(kv){ return d3.min(kv.days, function(d){ return d.wins_over; })});
-				var maxY = d3.max(scope.days, function(kv){ return d3.max(kv.days, function(d){ return d.wins_over; })});
-
-				// Set the x and y domains
-				x.domain([minX, maxX]);
-				y.domain([minY, maxY]);
 
 
 				var graphLine = svg.selectAll("path.line")
