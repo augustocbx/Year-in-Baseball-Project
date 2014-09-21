@@ -125,11 +125,11 @@ baseballApp.directive("lineGraph", function($window){
 
 
 				d3.selectAll("path.line")
-						.attr("opacity", .15);
+						.style("opacity", .15);
 
 				d3.select(lineId)
 						.style("stroke-width", "8px" )
-						.attr("opacity", 1)
+						.style("opacity", 1)
 						.moveToFront();
 
 				svg.append("text")
@@ -151,7 +151,7 @@ baseballApp.directive("lineGraph", function($window){
 			function highlightAll(){
 
 				d3.selectAll("path.line")
-					.attr("opacity", 1)
+					.style("opacity", 1)
 					.style("stroke-width", "2px");
 
 				d3.selectAll("text.teamName").remove();
@@ -164,21 +164,33 @@ baseballApp.directive("lineGraph", function($window){
 
 			// Click team to get data on team
 			function selectTeam(keepLine, d){
+
+				//Find the minimum and maximum wins_over in the dataset
+				var minY = d3.min(scope.days, function(kv){ return d3.min(kv.days, function(d){ return d.wins_over; })});
+				var maxY = d3.max(scope.days, function(kv){ return d3.max(kv.days, function(d){ return d.wins_over; })});
+
+				var teamMin = d3.min(d.days, function(d){ return d.wins_over; });
+
+				var area = d3.svg.area()
+							.interpolate("basis")
+							.x(function(d) { return x(d.date) })
+							.y0(height + y(maxY - minY))
+							.y1(function(d) { return y(d.wins_over)});
 						
 				svg.selectAll("path.line")
-							.transition()
-							.duration(1000)
-							.attr("d", function(d){
-								return (this === keepLine) ? line(d.days) : foldLines(d.days);
-							})
-							.attr("class", function(d){
-								return (this === keepLine) ? "line" : "line remove"
-							})
-							.each('end', function(){
-								svg.selectAll("path.remove").remove();
-							});
+						.transition()
+						.duration(1000)
+						.style("opacity", 0)
+						.attr("d", function(d){
+							return foldLines(d.days)
+						})
+						.remove();
 
-				var graphArea = svg.append("path")
+				// Generate the area
+				var graphArea = svg.append("g")
+									.attr("class", "areaGroup");
+
+				graphArea.append("path")
 										.datum(d)
 										.attr("d", function(d){
 											return removeArea(d.days)
@@ -190,7 +202,7 @@ baseballApp.directive("lineGraph", function($window){
 										.attr("fill", function(d){
 											return colorTeam(d);
 										})
-										.attr("opacity", 1)
+										.style("opacity", 1)
 										.style("cursor", "pointer")
 										.on("click", function(){
 											redrawLines();
@@ -199,7 +211,14 @@ baseballApp.directive("lineGraph", function($window){
 										.duration(1000)
 										.attr("d", function(d){
 											return area(d.days)
+										})
+										.each("end", function(){
+											svg.select("g.areaGroup")
+												.transition()
+												.duration(1000)
+												.attr("transform", "translate(0," + (height - y(teamMin)) + ")")
 										});
+
 
 						
 			};
@@ -211,51 +230,65 @@ baseballApp.directive("lineGraph", function($window){
 			function redrawLines(){
 
 				
-
-				svg.selectAll("path.area")
-							.attr("d", function(d){
-								return foldLines(d.days);
-							})
+				svg.selectAll("g.areaGroup")
 							.transition()
 							.duration(1000)
-							.attr("d", function(d){
-								return removeArea(d.days)
-							})
-							.remove();
+							.attr("transform", "translate(0,0)")
+							.each("end", function(){
+								
+								// Run these functions after area moves back up.
 
-				var graphLine = svg.selectAll("path.line")
-										.data(scope.days)
-										.enter()
-										.append("path")
-											.attr("d", function(d){
-												return foldLines(d.days)
-											})
-											.attr("class", "line")
-											.attr("id", function(d){
-												return d.id;
-											})
-											.style("fill", "none")
-											.style("stroke", function(d){
-												return colorTeam(d);
-											})
-											.on("mouseover", function(d){
-												scope.highlightLine(d);
-											})
-											.on("mouseout", function(){
-												highlightAll()
-											})
-											.on("click", function(d){
-												var keepLine = this;
-												selectTeam(keepLine, d);
-											})
-											.transition()
-											.duration(1000)
-											.attr("d", function(d){
-												return line(d.days);
-											})
-											.style("stroke-width", "2px")
-											.attr("clip-path", "url(#clip)")
-											.style("cursor", "pointer");
+								svg.selectAll("path.area")
+									.attr("d", function(d){
+										return foldLines(d.days);
+									})
+									.transition()
+									.duration(1000)
+									.attr("d", function(d){
+										return removeArea(d.days)
+									})
+									.each("end", function(){
+										svg.selectAll("g.areaGroup").remove()
+									});
+
+								var graphLine = svg.selectAll("path.line")
+											.data(scope.days)
+											.enter()
+											.append("path")
+												.attr("d", function(d){
+													return foldLines(d.days)
+												})
+												.attr("class", "line")
+												.attr("id", function(d){
+													return d.id;
+												})
+												.style("fill", "none")
+												.style("stroke", function(d){
+													return colorTeam(d);
+												})
+												.style("opacity", 0)
+												.on("mouseover", function(d){
+													scope.highlightLine(d);
+												})
+												.on("mouseout", function(){
+													highlightAll()
+												})
+												.on("click", function(d){
+													var keepLine = this;
+													selectTeam(keepLine, d);
+												})
+												.transition()
+												.duration(1000)
+												.attr("d", function(d){
+													return line(d.days);
+												})
+												.style("stroke-width", "2px")
+												.style("opacity", 1)
+												.attr("clip-path", "url(#clip)")
+												.style("cursor", "pointer");
+							});
+
+				
 
 			};
 			
@@ -281,11 +314,15 @@ baseballApp.directive("lineGraph", function($window){
 
 				// Find the minimum and maximum dates in the dataset
 				var minX = d3.min(scope.days, function(kv){ return d3.min(kv.days, function(d){ return d.date; })});
-				var maxX = d3.max(scope.days, function(kv){ return d3.max(kv.days, function(d){ return d.date; })})
+				var maxX = d3.max(scope.days, function(kv){ return d3.max(kv.days, function(d){ return d.date; })});
+
+				//Find the minimum and maximum wins_over in the dataset
+				var minY = d3.min(scope.days, function(kv){ return d3.min(kv.days, function(d){ return d.wins_over; })});
+				var maxY = d3.max(scope.days, function(kv){ return d3.max(kv.days, function(d){ return d.wins_over; })});
 
 				// Set the x and y domains
 				x.domain([minX, maxX]);
-				y.domain([-60, 60]);
+				y.domain([minY, maxY]);
 
 				//Create a clip path for the curtain and lines
 				var clip = svg.append("clipPath")
@@ -305,28 +342,6 @@ baseballApp.directive("lineGraph", function($window){
 
 				t.select("#clip").select("rect")
 								.attr("width", width);
-
-				
-				// Draw the lines
-				// var graphArea = svg.selectAll("path.area")
-				// 				.data(scope.days)
-				// 				.enter()
-				// 				.append("path")
-				// 				.attr("class", "area")
-				// 				.attr("id", function(d){
-				// 					return d.id
-				// 				})
-				// 				.attr("d", function(d){
-				// 					return area(d.days)
-				// 				})
-				// 				.attr("fill", function(d, i){
-				// 					return colorTeam(d,i);
-				// 				})
-				// 				.attr("opacity", 0)
-				// 				.on("mouseout", function(d){
-				// 					highlightAll();
-				// 				});
-								
 
 				var graphLine = svg.selectAll("path.line")
 								.data(scope.days)
