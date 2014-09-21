@@ -165,6 +165,8 @@ baseballApp.directive("lineGraph", function($window){
 			// Click team to get data on team
 			function selectTeam(keepLine, d){
 
+				scope.getTeamData(d);
+
 				//Find the minimum and maximum wins_over in the dataset
 				var minY = d3.min(scope.days, function(kv){ return d3.min(kv.days, function(d){ return d.wins_over; })});
 				var maxY = d3.max(scope.days, function(kv){ return d3.max(kv.days, function(d){ return d.wins_over; })});
@@ -218,9 +220,6 @@ baseballApp.directive("lineGraph", function($window){
 												.duration(1000)
 												.attr("transform", "translate(0," + (height - y(teamMin)) + ")")
 										});
-
-
-						
 			};
 
 
@@ -402,10 +401,6 @@ baseballApp.directive("lineGraph", function($window){
 
 			// --- Click Functions --- //
 
-			document.getElementById("runSim").onclick = function(){
-				runSimulation();
-
-			};
 
 			// Run simulation
 

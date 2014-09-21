@@ -1,4 +1,4 @@
-baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'GamesData', 'DaysData', function($scope, $http, $timeout, GamesData, DaysData){
+baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'GamesData', 'DaysData', 'TeamsData', function($scope, $http, $timeout, GamesData, DaysData, TeamsData){
 
 	
 	// --- Games API --- //
@@ -9,7 +9,7 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 
 	$scope.games = [];
 
-	//Get games data from the API
+	// Get games data from the API
 	GamesData.getData().then(function(json){
 		$scope.games = json.data;
 	})
@@ -22,38 +22,66 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 
 	$scope.days = [];
 
-	//Get days data from the API
+	// Get days data from the API
 	DaysData.getData().then(function(json){
 		$scope.days = json.data;
 	});
+
+	// --- Teams API --- //
+
+	// The teams API contains information about a team in a given season, including its full name, city, stadium, and standing at the end of the season
+
+	$scope.teams = [];
+
+	// Get the teams data from the API
+	TeamsData.getData().then(function(json){
+		$scope.teams = json.data
+	});
+
 
 	// --- Date Counter --- //
 
 	// The date counter changes the date plus one day every second. The date is displayed on the graph.
 
-	var daySeconds = 24 * 60 * 60 * 1000;
+	// var daySeconds = 24 * 60 * 60 * 1000;
 
-	$scope.date = new Date(1908, 03, 14);
+	// $scope.date = new Date(1908, 03, 14);
 
-	function addDay(date){
-		var nextDayTime = date.getTime() + daySeconds;
-		var year = new Date(nextDayTime).getFullYear();
-		var month = new Date(nextDayTime).getMonth();
-		var day = new Date(nextDayTime).getDate();
-		return new Date(year, month, day);
-	};
+	// function addDay(date){
+	// 	var nextDayTime = date.getTime() + daySeconds;
+	// 	var year = new Date(nextDayTime).getFullYear();
+	// 	var month = new Date(nextDayTime).getMonth();
+	// 	var day = new Date(nextDayTime).getDate();
+	// 	return new Date(year, month, day);
+	// };
 
-	endDate = new Date(1908, 09, 08);
+	// endDate = new Date(1908, 09, 08);
 	
-	$scope.updateDate = function(){
-		if ($scope.date.getTime() < endDate.getTime()){
-			$timeout(function(){
-				$scope.date = addDay($scope.date);
-				$scope.$digest();
-				$scope.updateDate();
-			}, 1000);
-		}
-	}
+	// $scope.updateDate = function(){
+	// 	if ($scope.date.getTime() < endDate.getTime()){
+	// 		$timeout(function(){
+	// 			$scope.date = addDay($scope.date);
+	// 			$scope.$digest();
+	// 			$scope.updateDate();
+	// 		}, 1000);
+	// 	}
+	// }
+
+
+	// --- Current Team --- //
+
+	// When the user selects a given team, information will show on the team.
+
+	$scope.currentTeam = [];
+
+	$scope.getTeamData = function(team){
+		$scope.teams.forEach(function(t){
+			if (t.id == team.id){
+				$scope.currentTeam = t;
+			};
+		});
+		console.log($scope.currentTeam)
+	};
 	
 
 }])
