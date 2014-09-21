@@ -1,1 +1,1 @@
-var baseballApp = angular.module('baseballApp', []);
+var baseballApp = angular.module('baseballApp', ['templates']);

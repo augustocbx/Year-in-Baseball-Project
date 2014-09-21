@@ -14,7 +14,8 @@
 					<div ng-show="currentTeam.id == 'NYG'">The New York Giants had a strong season in 1908. After spending the first half of the season hover just above a .500 win percentage, the team surged in the second half, managing to finish the season tied for first with the Chicago Cubs. Unfortunately, a unfortunate base-running mistake by Fred Merkle, known as <a href="http://en.wikipedia.org/wiki/Merkle's_Boner">Merkle's Boner</a>, cost the team sole possession of first place. The team then lost a one-game playoff to determine the winner of the National League Pennant.</div>
 				</div>
 			</div>
-			<div line-graph id="line-graph" ng-click="getTeamData"></div>
+			<div line-graph id="line-graph" ng-click="getTeamData" ng-mousemove="getDayGames" ng-mouseleave="removeTooltip"></div>
+			<tooltip ng-show="tooltipView"></tooltip>
 		</div>
 
 

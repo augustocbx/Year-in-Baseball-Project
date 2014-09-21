@@ -44,4 +44,19 @@
 		position: absolute;
 	}
 
+	tooltip{
+		position: absolute;
+		width: 150px;
+		height: 200px;
+		background-color: white;
+		z-index: 2;
+
+		.tooltipTitle{
+			position: relative;
+			margin: 10px 0 0 10px;
+			font-family: "Open Sans Condensed", sans;	
+			font-size: 20px;
+		}
+	}
+
 }

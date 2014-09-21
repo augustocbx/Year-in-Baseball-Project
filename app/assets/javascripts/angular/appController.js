@@ -8,6 +8,12 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 	$scope.teamView = false;
 
 
+	// -- Tool Tip -- //
+
+	// Create a view for the tooltip
+	$scope.tooltipView = false;
+
+
 
 
 	// -------- APIs -------- //
@@ -103,6 +109,35 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 			$scope.teamView = false;
 		}
 	};
-	
+
+	// --- Current Day Data --- //
+
+	$scope.tooltipLeft;
+	$scope.tooltipTop;
+
+	// Variable to store current day data
+	$scope.currentDateData = [];
+
+	$scope.getDayData = function(top, left, d){
+		$scope.tooltipView = true;
+		$scope.tooltipLeft = left - 50;
+		$scope.tooltipTop = top - 300;
+		
+		// -- Data related to this day -- //
+		$scope.currentDateData = d;
+
+		// Date
+		var fullDate = d.date;
+		var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+		$scope.cd_year = new Date(fullDate).getFullYear();
+		$scope.cd_month = months[new Date(fullDate).getMonth()];
+		$scope.cd_day= new Date(fullDate).getDate();
+	}
+
+	// - Remove Tooltip - //
+
+	$scope.removeTooltip = function(){
+		$scope.tooltipView = false;
+	}
 
 }])

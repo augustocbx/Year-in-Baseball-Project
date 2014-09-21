@@ -257,6 +257,7 @@ baseballApp.directive("lineGraph", function($window){
 
 				graphArea.on("mouseleave", function(){
 					removeDayArea();
+					scope.removeTooltip();
 				});
 			};
 
@@ -264,42 +265,50 @@ baseballApp.directive("lineGraph", function($window){
 			// --- Mouse Move Functions --- //
 
 			function getDayGames(t, d){
+
+				// Turn on tooltip
+				var top = d3.mouse(document.getElementById("lineGraphCanvas"))[1];
+				var left = d3.mouse(document.getElementById("lineGraphCanvas"))[0];
 				
 				// Find date position
-					var posX = d3.mouse(t)[0];
+				var posX = d3.mouse(t)[0];
 					
-					// Set empty data array to push dates to
-					var dayData = [];
+				// Set empty data array to push dates to
+				var dayData = [];
 
-					// Find day objects to be incnluded in data
-					var dayPosition = (posX/(width-rightPadding)) * d.days.length;
-					var dayObject = d.days[Math.floor(dayPosition)]
-					var priorDayObject = d.days[Math.floor(dayPosition)-1];
+				// Find day objects to be incnluded in data
+				var dayPosition = (posX/(width-rightPadding)) * d.days.length;
+				var dayObject = d.days[Math.floor(dayPosition)]
+				var priorDayObject = d.days[Math.floor(dayPosition)-1];
 
-					if (dayObject != daySelected){
+				if (dayObject != daySelected){
 
-						daySelected = dayObject;
+					// Run get day data function
+					scope.getDayData(top, left, dayObject);
 
-						// Push dates to array
-						dayData.push(priorDayObject);
-						dayData.push(dayObject);
+					// Set the day selected variable to the day object
+					daySelected = dayObject;
 
-						removeDayArea();
+					// Push dates to array
+					dayData.push(priorDayObject);
+					dayData.push(dayObject);
 
-						// Build a new path using new data
-						svg.select("g.areaGroup").append("path")
-												.attr("class", "dayArea")
-												.attr("d", function(d){
-													return area(dayData)
-												})
-												.attr("fill", "rgba(255,255,255,.5")
-												.style("opacity", 1)
-												.style("cursor", "pointer")
-												.on("click", function(){
-													removeDayArea();
-													redrawLines();
-												});
-					};
+					removeDayArea();
+
+					// Build a new path using new data
+					svg.select("g.areaGroup").append("path")
+											.attr("class", "dayArea")
+											.attr("d", function(d){
+												return area(dayData)
+											})
+											.attr("fill", "rgba(255,255,255,.5")
+											.style("opacity", 1)
+											.style("cursor", "pointer")
+											.on("click", function(){
+												removeDayArea();
+												redrawLines();
+											});
+				};
 
 			};
 
@@ -309,7 +318,11 @@ baseballApp.directive("lineGraph", function($window){
 			// Click are to redraw the lines on the graph
 			function redrawLines(){
 
+				// Get data on teams
 				scope.getTeamData();
+
+				// Remove the tooltip
+				scope.removeTooltip();
 
 				svg.selectAll("g.areaGroup")
 							.transition()
