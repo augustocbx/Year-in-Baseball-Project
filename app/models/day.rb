@@ -1,3 +1,5 @@
 class Day < ActiveRecord::Base
-	belongs_to :team, foreign_key: "team_id"
+	has_many :day_game_joins
+	has_many :games, :through => :day_game_joins
+	belongs_to :team
 end

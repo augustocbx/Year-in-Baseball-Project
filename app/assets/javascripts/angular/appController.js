@@ -118,13 +118,24 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 	// Variable to store current day data
 	$scope.currentDateData = [];
 
+	// Variable to store data of games on this day
+	$scope.currentGameData = [];
+
 	$scope.getDayData = function(top, left, d){
 		$scope.tooltipView = true;
 		$scope.tooltipLeft = left - 50;
 		$scope.tooltipTop = top - 300;
+
+		console.log(d);
+		console.log($scope.games[1])
 		
 		// -- Data related to this day -- //
-		$scope.currentDateData = d;
+		for (i = 0; i < $scope.games.length-1; ++i){
+			if ($scope.games[i].visitor_day_id == d.id || $scope.games[i].home_day_id == d.id){
+				$scope.currentGameData.push($scope.games[i]);
+			}
+		}
+
 
 		// Date
 		var fullDate = d.date;
@@ -132,6 +143,10 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 		$scope.cd_year = new Date(fullDate).getFullYear();
 		$scope.cd_month = months[new Date(fullDate).getMonth()];
 		$scope.cd_day= new Date(fullDate).getDate();
+
+		// Search day for games by game id
+		console.log($scope.currentGameData)
+
 	}
 
 	// - Remove Tooltip - //
