@@ -63,7 +63,7 @@ baseballApp.directive("lineGraph", function($window){
 			// Color the lines according to their teams
 
 			function colorTeam(id){
-				var colors = ["#006837","#1a9850", "#fee08b","#66bd63","#a6d96a","#fee08b", "#fdae61", "#f46d43", "#d73027", "#a50026"]  ;
+				var colors = ["#006837","#1a9850","#66bd63","#a6d96a","#fee08b", "#fdae61", "#f46d43", "#a50026"]  ;
 
 				return colors[scope.days.indexOf(id)];
 
@@ -113,6 +113,9 @@ baseballApp.directive("lineGraph", function($window){
 			var area;
 			var daySelected;
 
+			var minY;
+			var maxY
+
 			// --- Set Data --- //
 
 			// Runs after the data loads
@@ -131,8 +134,8 @@ baseballApp.directive("lineGraph", function($window){
 				var maxX = d3.max(scope.days, function(kv){ return d3.max(kv.days, function(d){ return d.date; })});
 				
 				// Get minimum and maximum wins over .500
-				var minY = d3.min(scope.days, function(kv){ return d3.min(kv.days, function(d){ return d.wins_over; })});
-				var maxY = d3.max(scope.days, function(kv){ return d3.max(kv.days, function(d){ return d.wins_over; })});
+				minY = d3.min(scope.days, function(kv){ return d3.min(kv.days, function(d){ return d.wins_over; })});
+				maxY = d3.max(scope.days, function(kv){ return d3.max(kv.days, function(d){ return d.wins_over; })});
 
 				// Set the x and y domains
 				x.domain([minX, maxX]);
@@ -253,6 +256,12 @@ baseballApp.directive("lineGraph", function($window){
 												.transition()
 												.duration(1000)
 												.attr("transform", "translate(0," + (height - y(teamMin)) + ")")
+
+											svg.select("text.yAxis")
+												.transition()
+												.duration(1000)
+												.attr("y", (height - 70) )
+												.attr("transform", "rotate(270 " + (width - 20) + "," + (height -70) + ")");
 										});
 
 				graphArea.on("mouseleave", function(){
@@ -323,6 +332,13 @@ baseballApp.directive("lineGraph", function($window){
 
 				// Remove the tooltip
 				scope.removeTooltip();
+
+				// Move Y Axis
+				svg.select("text.yAxis")
+						.transition()
+						.duration(1000)
+						.attr("y", ((height + y(maxY - minY) - topPadding)))
+						.attr("transform", "rotate(270 " + (width - 20) + "," + (height + y(maxY - minY) - topPadding) + ")");
 
 				svg.selectAll("g.areaGroup")
 							.transition()
@@ -397,6 +413,17 @@ baseballApp.directive("lineGraph", function($window){
 			function drawLines(){
 
 
+				// Draw Y Axis
+				var yAxis = svg.append("text")
+								.attr("class", "yAxis")
+								.attr("x", width - 30)
+								.attr("y", ((height + y(maxY - minY) - topPadding)))
+								.attr("transform", "rotate(270 " + (width - 20) + "," + (height + y(maxY - minY) - topPadding) + ")")
+								.attr("text-anchor", "middle")
+								.attr("font-family", "Open Sans Condensed")
+								.text("WINS - LOSSES")
+
+
 				var graphLine = svg.selectAll("path.line")
 								.data(scope.days)
 								.enter()
@@ -425,6 +452,7 @@ baseballApp.directive("lineGraph", function($window){
 										selectTeam(keepLine, d);
 									});
 
+				
 				//Create a clip path for the curtain and lines
 				// var clip = svg.append("clipPath")
 				// 	.attr("id", "clip")
@@ -446,42 +474,6 @@ baseballApp.directive("lineGraph", function($window){
 								.duration(300)
 								.attr("width", 0)
 								.ease("linear");
-
-			};
-
-				
-
-			// function writeDate(){
-
-			// 	svg.selectAll("g.date").select("text").remove();
-
-			// 	// Add dates to the bottom of the graph
-			// 	var dateGroup = svg
-			// 					.append("g")
-			// 					.attr("class", "date")
-			// 					.attr("height", "50px")
-
-			// 	var dateText = dateGroup.append("text")
-			// 					.text(dateFormat(scope.date))
-			// 					.attr("font-size", 36)
-			// 					.attr("font-family", "Oswald")
-			// 					.attr("fill", "rgba(0,0,0,.7)")
-			// 					.attr("text-anchor", "end")
-			// 					.attr("transform", "translate(" + (width - 100) + "," + (height - 50) + ")")
-
-			// };
-
-
-			// --- Click Functions --- //
-
-
-			// Run simulation
-
-			function runSimulation(){
-
-				// Create the transition for the curtain
-				
-				scope.updateDate();
 
 			};
 
