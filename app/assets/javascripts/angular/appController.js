@@ -122,6 +122,7 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 	$scope.currentGameData = [];
 
 	$scope.getDayData = function(top, left, d){
+		$scope.currentGameData = [];
 		$scope.tooltipView = true;
 		$scope.tooltipLeft = left - 50;
 		$scope.tooltipTop = top - 300;
