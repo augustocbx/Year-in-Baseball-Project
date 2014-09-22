@@ -124,13 +124,12 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 	$scope.getDayData = function(top, left, d){
 		$scope.currentGameData = [];
 		$scope.tooltipView = true;
-		$scope.tooltipLeft = left - 50;
-		$scope.tooltipTop = top - 300;
-
-		console.log(d);
-		console.log($scope.games[1])
+		$scope.tooltipLeft = left - 75;
+		$scope.tooltipTop = top - 250;
 		
 		// -- Data related to this day -- //
+
+		// Search for a match
 		for (i = 0; i < $scope.games.length-1; ++i){
 			if ($scope.games[i].visitor_day_id == d.id || $scope.games[i].home_day_id == d.id){
 				$scope.currentGameData.push($scope.games[i]);
@@ -145,8 +144,48 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 		$scope.cd_month = months[new Date(fullDate).getMonth()];
 		$scope.cd_day= new Date(fullDate).getDate();
 
-		// Search day for games by game id
-		console.log($scope.currentGameData)
+		// Won, Lost, or Tied?
+
+		$scope.currentGameData.forEach(function(g){
+			function homeOrAway(d){
+				if (g.team_visitor_id == d.team_id){
+					visitorResult(g);
+				}
+				else if (g.team_home_id == d.team_id){
+					homeResult(g);
+				}
+
+				function visitorResult(game){
+					if (game.score_visitor > game.score_home){
+						game.result = "W"
+					}
+					else if (game.score_home > game.score_visitor){
+						game.result = "L"
+					}
+					else{
+						game.result = "T"
+					}
+				}
+
+				function homeResult(game){
+					if (game.score_visitor > game.score_home){
+						game.result = "L"
+					}
+					else if (game.score_home > game.score_visitor){
+						game.result = "W"
+					}
+					else{
+						game.result = "T"
+					}
+				}
+			}
+
+			homeOrAway(d);
+		});
+
+		console.log($scope.currentGameData);
+
+
 
 	}
 

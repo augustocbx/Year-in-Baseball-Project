@@ -1,1 +1,14 @@
 <div class="tooltipTitle">{{cd_month}} {{cd_day}}, {{cd_year}}</div>
+<div class="tooltipGames" ng-show="currentGameData.length">
+	<div class="gameLocation">{{currentGameData[0].location}}</div>
+	<div class="individualGameData group" ng-repeat="g in currentGameData">
+		<div class="result">
+			<div ng-class="{win : g.result =='W', loss : g.result =='L', tie : g.result =='T'}">{{g.result}}</div>
+		</div>
+		<div class="gameSubData">
+			<div>{{g.team_visitor_id}} @ {{g.team_home_id}}</div>
+			<div>{{g.score_visitor}} - {{g.score_home}}</div>
+		</div>
+	</div>
+</div>
+<div ng-hide="currentGameData.length" class="tooltipNoGame">No games</div>
