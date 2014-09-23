@@ -1,4 +1,4 @@
-baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'GamesData', 'DaysData', 'TeamsData', function($scope, $http, $timeout, GamesData, DaysData, TeamsData){
+baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'GamesData', 'DaysData', 'TeamsData', 'EventsData', function($scope, $http, $timeout, GamesData, DaysData, TeamsData, EventsData){
 
 	
 	// -------- Views -------- //
@@ -55,37 +55,20 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 
 	// Get the teams data from the API
 	TeamsData.getData().then(function(json){
-		$scope.teams = json.data
+		$scope.teams = json.data;
 	});
 
 
-	// --- Date Counter --- //
+	// --- Events API --- //
 
-	// The date counter changes the date plus one day every second. The date is displayed on the graph.
+	// The events API contains data on events that happened in a particular day, including data, text, and type.
 
-	// var daySeconds = 24 * 60 * 60 * 1000;
+	$scope.events = []
 
-	// $scope.date = new Date(1908, 03, 14);
-
-	// function addDay(date){
-	// 	var nextDayTime = date.getTime() + daySeconds;
-	// 	var year = new Date(nextDayTime).getFullYear();
-	// 	var month = new Date(nextDayTime).getMonth();
-	// 	var day = new Date(nextDayTime).getDate();
-	// 	return new Date(year, month, day);
-	// };
-
-	// endDate = new Date(1908, 09, 08);
-	
-	// $scope.updateDate = function(){
-	// 	if ($scope.date.getTime() < endDate.getTime()){
-	// 		$timeout(function(){
-	// 			$scope.date = addDay($scope.date);
-	// 			$scope.$digest();
-	// 			$scope.updateDate();
-	// 		}, 1000);
-	// 	}
-	// }
+	// Get the events data from API
+	EventsData.getData().then(function(json){
+		$scope.events = json.data;
+	});
 
 
 	// -------- Functions -------- //

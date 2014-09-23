@@ -4,6 +4,7 @@ Rails.application.routes.draw do
     resources :teams, defaults: {format: :json}
     resources :games, defaults: {format: :json}
     resources :days, defaults: {format: :json}
+    resources :events, defaults: {format: :json}
   end
 
   get '/home', to: 'home#index', as: 'home'

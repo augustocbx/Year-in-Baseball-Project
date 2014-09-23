@@ -4,18 +4,24 @@
 
 		<div id="visContainer">
 			<div id="visTextContainer">
+				
 				<div id="seasonIntro" ng-show="teamView === false">
 					<h2>1908 National League</h2>
-					<div>The 1908 Major League Baseball Season has been considered by some to be one of the most exciting seasons of all time. At the completion of the season, the top three teams in each league were within one game of each other at a time when only two teams could qualify for the post-season. The Chicago Cubs and New York Giants finished the season tied for first in the National League, thanks to the infamous <a href="http://en.wikipedia.org/wiki/Merkle's_Boner">Merkle's Boner</a> and were forced to play a one-game playoff to qualify for the World Series. The Cubs went on to win the game and the World Series over the Detroit Tigers, the last time they won the championship. </div>
+					<div>The 1908 Major League Baseball Season has been considered by some to be one of the most exciting seasons of all time. At its completion, the top three teams in each league were within one game of each other, but only one from each could qualify for the playoffs. The Chicago Cubs and New York Giants finished the season tied for first in the National League, thanks to the infamous <a href="http://en.wikipedia.org/wiki/Merkle's_Boner">Merkle's Boner</a> incident and were forced to play a one-game playoff to qualify for the World Series. The Cubs went on to win the game and the championship - the last time the team has won the Majors' highest prize. </div>
 				</div>
+
 				<div id="teamInfo" ng-show="teamView === true">
 					<h2>{{currentTeam.city}} {{currentTeam.name}}</h2>
 					<div ng-show="currentTeam.id == 'CHC'">The 1908 season represents the last season in which the Chicago Cubs won the World Series. Throughout the season, the team managed to stay above a .500 win percentage. The team managed to maintain a first place position for much of the first half, but fell to third in the second half. Thanks to a strong finish, the Cubs were able to tie the New York Giants for first place. After beating the Giants in a one-game playoff, the team defeated the Detroit Tigers to win the World Series. </div>
 					<div ng-show="currentTeam.id == 'NYG'">The New York Giants had a strong season in 1908. After spending the first half of the season hover just above a .500 win percentage, the team surged in the second half, managing to finish the season tied for first with the Chicago Cubs. Unfortunately, a unfortunate base-running mistake by Fred Merkle, known as <a href="http://en.wikipedia.org/wiki/Merkle's_Boner">Merkle's Boner</a>, cost the team sole possession of first place. The team then lost a one-game playoff to determine the winner of the National League Pennant.</div>
 				</div>
+
 			</div>
+			
 			<div line-graph id="line-graph" ng-click="getTeamData" ng-mousemove="getDayGames" ng-mouseleave="removeTooltip"></div>
 			<tooltip ng-show="tooltipView"></tooltip>
+
+			<div timeline id="time-line"></div>
 		</div>
 
 

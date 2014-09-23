@@ -39,15 +39,11 @@ baseballApp.directive("lineGraph", function($window){
 			var height = 500;
 			var topPadding = 200;
 			var rightPadding = 70;
+			var bottomPadding = 3;
 
 			var svg = d3.select("#lineGraphCanvas")
 						.attr("width", width)
 						.attr("height", height);
-
-			// --- Date Formatting --- //
-
-			var dateFormat = d3.time.format("%d %b %Y");
-
 
 			// --- Reference Functions --- //
 
@@ -80,7 +76,7 @@ baseballApp.directive("lineGraph", function($window){
 
 			// Set the Y Scale
 			var y = d3.scale.linear()
-						.range([height, topPadding]);
+						.range([height-bottomPadding, topPadding]);
 
 			// Line function to turn data into lines
 			var line = d3.svg.line()
@@ -145,7 +141,7 @@ baseballApp.directive("lineGraph", function($window){
 				area = d3.svg.area()
 							.interpolate("basis")
 							.x(function(d) { return x(d.date) })
-							.y0(height + y(maxY - minY) - topPadding)
+							.y0(height + y(maxY - minY) - topPadding - bottomPadding)
 							.y1(function(d) { return y(d.wins_over)});
 			};
 
