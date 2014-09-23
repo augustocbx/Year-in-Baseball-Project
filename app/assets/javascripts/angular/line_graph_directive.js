@@ -174,8 +174,8 @@ baseballApp.directive("lineGraph", function($window){
 							return d.id
 						})
 						.attr("class", "teamName")
-						.attr("x", width-40)
-						.attr("y", y(d.days[d.days.length-1].wins_over) + 5)
+						.attr("x", width - rightPadding - 20)
+						.attr("y", y(d.days[d.days.length-1].wins_over) - 20)
 						.attr("font-family", "Open Sans Condensed")
 						.attr("font-size", "20px");
 
@@ -224,6 +224,13 @@ baseballApp.directive("lineGraph", function($window){
 
 				// Remove Y axis numbers
 				svg.selectAll("text.yAxisNum")
+						.attr("fill", "rgba(0,0,0,1)")
+						.transition()
+						.duration(1000)
+						.attr("fill", "rgba(0,0,0,0)");
+
+				// Remove team name from line
+				svg.select("text.teamName")
 						.attr("fill", "rgba(0,0,0,1)")
 						.transition()
 						.duration(1000)
@@ -366,29 +373,10 @@ baseballApp.directive("lineGraph", function($window){
 						.attr("transform", "translate(0,0)");
 
 				// Redraw Y Axis Numbers
-				svg.append("text")
-						.attr("fill", "rgba(0,0,0,0)")
+				svg.selectAll("text.yAxisNum")
 						.transition()
 						.duration(1000)
-						.attr("class", "yAxisNum")
-						.attr("fill", "rgba(0,0,0,1)")
-						.attr("x", width - 35)
-						.attr("y", (y(maxY)))
-						.attr("text-anchor", "middle")
-						.attr("font-family", "Open Sans Condensed")
-						.text(maxY);
-
-				svg.append("text")
-						.attr("fill", "rgba(0,0,0,0)")
-						.transition()
-						.duration(1000)
-						.attr("class", "yAxisNum")
-						.attr("fill", "rgba(0,0,0,1)")
-						.attr("x", width - 35)
-						.attr("y", (y(minY)))
-						.attr("text-anchor", "middle")
-						.attr("font-family", "Open Sans Condensed")
-						.text(minY);
+						.attr("fill", "rgba(0,0,0,1)");
 
 				svg.selectAll("g.areaGroup")
 							.transition()
@@ -476,7 +464,7 @@ baseballApp.directive("lineGraph", function($window){
 				// Draw Y Axis Numbers
 				svg.append("text")
 						.attr("class", "yAxisZero")
-						.attr("x", width - 45)
+						.attr("x", width - 50)
 						.attr("y", ((height + y(maxY - minY) - topPadding + 5)))
 						.attr("text-anchor", "middle")
 						.attr("font-family", "Open Sans Condensed")
@@ -484,7 +472,7 @@ baseballApp.directive("lineGraph", function($window){
 
 				svg.append("text")
 						.attr("class", "yAxisNum")
-						.attr("x", width - 45)
+						.attr("x", width - 50)
 						.attr("y", (y(maxY)))
 						.attr("text-anchor", "middle")
 						.attr("font-family", "Open Sans Condensed")
@@ -492,7 +480,7 @@ baseballApp.directive("lineGraph", function($window){
 
 				svg.append("text")
 						.attr("class", "yAxisNum")
-						.attr("x", width - 45)
+						.attr("x", width - 50)
 						.attr("y", (y(minY)))
 						.attr("text-anchor", "middle")
 						.attr("font-family", "Open Sans Condensed")
