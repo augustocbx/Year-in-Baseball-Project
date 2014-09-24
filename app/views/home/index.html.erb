@@ -18,10 +18,12 @@
 
 			</div>
 			
-			<div line-graph id="line-graph" ng-click="getTeamData" ng-mousemove="getDayGames" ng-mouseleave="removeTooltip"></div>
-			<tooltip ng-show="tooltipView"></tooltip>
+			<div line-graph id="line-graph" ng-click="getTeamData" ng-mousemove="getDayGames" ng-mouseleave="removeGameTooltip"></div>
+			<game-tooltip ng-show="gameTooltipView"></game-tooltip>
 
-			<div timeline id="time-line"></div>
+			<div timeline id="time-line" ng-mouseover="getEventData" ng-mouseout="removeEventTooltip"></div>
+
+			<event-tooltip ng-show="eventTooltipView"></game-tooltip>
 		</div>
 
 

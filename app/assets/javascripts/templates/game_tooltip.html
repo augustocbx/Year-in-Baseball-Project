@@ -1,5 +1,5 @@
-<div class="tooltipTitle">{{cd_month}} {{cd_day}}, {{cd_year}}</div>
-<div class="tooltipGames" ng-show="currentGameData.length">
+<div class="gameTooltipTitle">{{cd_month}} {{cd_day}}, {{cd_year}}</div>
+<div class="gameTooltipGames" ng-show="currentGameData.length">
 	<div class="gameLocation">{{currentGameData[0].location}}</div>
 	<div class="individualGameData group" ng-repeat="g in currentGameData">
 		<div class="result">
@@ -11,4 +11,4 @@
 		</div>
 	</div>
 </div>
-<div ng-hide="currentGameData.length" class="tooltipNoGame">No games</div>
+<div ng-hide="currentGameData.length" class="gameTooltipNoGame">No games</div>

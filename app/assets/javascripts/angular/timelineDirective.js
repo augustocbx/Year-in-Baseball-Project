@@ -72,12 +72,18 @@ baseballApp.directive("timeline", function($window){
 			// --- Mouseover Functions --- //
 
 			function selectDate(d){
-				circleSelection = "circle#event" + d.id
+
+				// Find tooltip location
+				var left = d3.mouse(document.getElementById("visContainer"))[0];
+
+				scope.getEventData(left, d);
+
+				circleSelection = "circle#event" + d.id;
 
 				svg.select(circleSelection)
 					.transition()
 					.duration(300)
-					.attr("r", 10)
+					.attr("r", 8)
 					.attr("stroke-width", 1)
 			}
 
@@ -85,6 +91,10 @@ baseballApp.directive("timeline", function($window){
 
 
 			function unselectDate(){
+
+				// Remove tooltip
+				scope.removeEventTooltip();
+
 				svg.selectAll("circle")
 					.transition()
 					.duration(300)

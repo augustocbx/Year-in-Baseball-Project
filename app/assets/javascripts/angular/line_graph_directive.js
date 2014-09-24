@@ -288,7 +288,7 @@ baseballApp.directive("lineGraph", function($window){
 
 				graphArea.on("mouseleave", function(){
 					removeDayArea();
-					scope.removeTooltip();
+					scope.removeGameTooltip();
 				});
 			};
 
@@ -353,7 +353,7 @@ baseballApp.directive("lineGraph", function($window){
 				scope.getTeamData();
 
 				// Remove the tooltip
-				scope.removeTooltip();
+				scope.removeGameTooltip();
 
 				// Move Y Axis
 				svg.select("text.yAxis")

@@ -8,10 +8,13 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 	$scope.teamView = false;
 
 
-	// -- Tool Tip -- //
+	// -- Tool Tips -- //
 
-	// Create a view for the tooltip
-	$scope.tooltipView = false;
+	// Create a view for the gameTooltip
+	$scope.gameTooltipView = false;
+
+	// Create a view for the gameTooltip
+	$scope.eventTooltipView = false;
 
 
 
@@ -73,6 +76,22 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 
 	// -------- Functions -------- //
 
+	
+	// --- Date Formatting --- //
+
+	function formatDate(d){
+		
+		var fullDate = d.date;
+		var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+		return  { 
+					"year": new Date(fullDate).getFullYear(),
+					"month": months[new Date(fullDate).getMonth()],
+					"day": new Date(fullDate).getDate()
+				}
+	}
+
+
 	// --- Current Team --- //
 
 	// When the user selects a given team, information will show on the team.
@@ -95,8 +114,9 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 
 	// --- Current Day Data --- //
 
-	$scope.tooltipLeft;
-	$scope.tooltipTop;
+	// Name tooltip position variables
+	$scope.gameTooltipLeft;
+	$scope.gameTooltipTop;
 
 	// Variable to store current day data
 	$scope.currentDateData = [];
@@ -106,9 +126,9 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 
 	$scope.getDayData = function(top, left, d){
 		$scope.currentGameData = [];
-		$scope.tooltipView = true;
-		$scope.tooltipLeft = left - 75;
-		$scope.tooltipTop = top - 250;
+		$scope.gameTooltipView = true;
+		$scope.gameTooltipLeft = left - 75;
+		$scope.gameTooltipTop = top - 250;
 		
 		// -- Data related to this day -- //
 
@@ -119,13 +139,12 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 			}
 		}
 
+		// Date Format
 
-		// Date
-		var fullDate = d.date;
-		var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-		$scope.cd_year = new Date(fullDate).getFullYear();
-		$scope.cd_month = months[new Date(fullDate).getMonth()];
-		$scope.cd_day= new Date(fullDate).getDate();
+		$scope.cd_year = formatDate(d).year;
+		$scope.cd_month = formatDate(d).month;
+		$scope.cd_day = formatDate(d).day;
+
 
 		// Won, Lost, or Tied?
 
@@ -166,16 +185,43 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 			homeOrAway(d);
 		});
 
-		console.log($scope.currentGameData);
 
 
+	};
 
-	}
+	// - Remove Game Tooltip - //
 
-	// - Remove Tooltip - //
+	$scope.removeGameTooltip = function(){
+		$scope.gameTooltipView = false;
+	};
 
-	$scope.removeTooltip = function(){
-		$scope.tooltipView = false;
-	}
+
+	// --- Event Data --- //
+
+	// Name tooltip position variables
+	$scope.eventTooltipLeft;
+	
+	$scope.getEventData = function(left, d){
+
+		$scope.currentEventData = d;
+
+		// Trigger the gameTooltip view
+		$scope.eventTooltipView = true;
+
+		// Change tooltip left position
+		$scope.eventTooltipLeft = left;
+
+		// Get Date
+		$scope.ce_year = formatDate(d).year;
+		$scope.ce_month = formatDate(d).month;
+		$scope.ce_day = formatDate(d).day;
+
+	};
+
+	// - Remove Event Tooltip - //
+
+	$scope.removeEventTooltip = function(){
+		$scope.eventTooltipView = false;
+	};
 
 }])
