@@ -13,7 +13,6 @@ baseballApp.directive("timeline", function($window){
 			// The watch functions make it so that the graph does not draw until after the data has been pulled in from the API.
 
 			// Watch Days
-
 			scope.$watch( 'events', function(){
 
 				if (scope.events.length){
@@ -21,7 +20,19 @@ baseballApp.directive("timeline", function($window){
 					drawTimeline();
 				}
 
-			})
+			});
+
+			// Watch current team
+			scope.$watch( 'teamView', function(){
+
+				if (scope.teamView == true){
+					colorNodes()
+				}
+				else{
+					unColorNodes()
+				}
+
+			});
 
 
 			// --- Draw SVG --- //
@@ -141,6 +152,41 @@ baseballApp.directive("timeline", function($window){
 						});
 
 			};
+
+			// --- Color Nodes --- //
+
+			function colorNodes(){
+
+				svg.selectAll("circle.event")
+						.attr("fill", "#fdae61")
+						.transition()
+						.duration(1000)
+						.attr("fill", function(d){
+							if (d.team_home_id == scope.currentTeam.id){
+								return scope.colorTeam(d.team_home_id);
+							}
+							else if (d.team_visitor_id == scope.currentTeam.id){
+								return scope.colorTeam(d.team_visitor_id);
+							}
+							else{
+								return "#aaaaaa"
+							};
+						});
+
+
+			}
+
+			// --- Color Nodes --- //
+
+			function unColorNodes(){
+
+				svg.selectAll("circle.event")
+						.transition()
+						.duration(1000)
+						.attr("fill", "#fdae61");
+
+
+			}
 
 		}
 	}

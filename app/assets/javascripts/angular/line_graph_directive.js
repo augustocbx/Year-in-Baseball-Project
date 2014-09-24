@@ -54,18 +54,6 @@ baseballApp.directive("lineGraph", function($window){
 			};
 
 
-			// --- Color Function --- //
-
-			// Color the lines according to their teams
-
-			function colorTeam(id){
-				var colors = ["#006837","#1a9850","#66bd63","#a6d96a","#fee08b", "#fdae61", "#f46d43", "#a50026"]  ;
-
-				return colors[scope.days.indexOf(id)];
-
-			};
-
-
 			// --- Date Functions --- //
 
 			// Parse date function to turn date into JavaScript date
@@ -258,7 +246,7 @@ baseballApp.directive("lineGraph", function($window){
 											return d.id
 										})
 										.attr("fill", function(d){
-											return colorTeam(d);
+											return scope.colorTeam(d.id);
 										})
 										.style("opacity", 1)
 										.style("cursor", "pointer")
@@ -418,7 +406,7 @@ baseballApp.directive("lineGraph", function($window){
 												})
 												.style("fill", "none")
 												.style("stroke", function(d){
-													return colorTeam(d);
+													return scope.colorTeam(d.id);
 												})
 												.style("opacity", 0)
 												.on("mouseover", function(d){
@@ -520,7 +508,7 @@ baseballApp.directive("lineGraph", function($window){
 									})
 									.style("fill", "none")
 									.style("stroke", function(d){
-										return colorTeam(d);
+										return scope.colorTeam(d.id);
 									})
 									.style("stroke-width", "2px")
 									.style("cursor", "pointer")	

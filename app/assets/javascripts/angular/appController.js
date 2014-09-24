@@ -89,14 +89,31 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 					"month": months[new Date(fullDate).getMonth()],
 					"day": new Date(fullDate).getDate()
 				}
-	}
+	};
+
+
+
+	// --- Color Function --- //
+
+	// Color the lines according to their teams
+
+	$scope.colorTeam = function(id){
+		var colors = ["#006837","#1a9850","#66bd63","#a6d96a","#fee08b", "#fdae61", "#f46d43", "#a50026"]  ;
+
+		for (i = 0; i < $scope.days.length; ++i){
+			if (id == $scope.days[i].id){
+				return colors[i]
+			}
+		};
+
+	};
 
 
 	// --- Current Team --- //
 
 	// When the user selects a given team, information will show on the team.
 
-	$scope.currentTeam = [];
+	$scope.currentTeam;
 
 	$scope.getTeamData = function(team){
 		if (team){$scope.teams.forEach(
