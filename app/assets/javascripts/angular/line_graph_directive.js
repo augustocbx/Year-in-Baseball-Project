@@ -39,7 +39,7 @@ baseballApp.directive("lineGraph", function($window){
 			var height = 500;
 			var topPadding = 200;
 			var rightPadding = 70;
-			var bottomPadding = 3;
+			var bottomPadding = 40;
 
 			var svg = d3.select("#lineGraphCanvas")
 						.attr("width", width)
@@ -66,9 +66,13 @@ baseballApp.directive("lineGraph", function($window){
 			};
 
 
+			// --- Date Functions --- //
 
 			// Parse date function to turn date into JavaScript date
 			var parseDate = d3.time.format("%Y-%m-%d").parse;
+
+			// Format date for presentation
+			var dateFormat = d3.time.format("%b %d, %Y");
 
 			// Set the X Scale
 			var x = d3.time.scale()
@@ -109,8 +113,11 @@ baseballApp.directive("lineGraph", function($window){
 			var area;
 			var daySelected;
 
+			var minX;
+			var maxX;
+
 			var minY;
-			var maxY
+			var maxY;
 
 			// --- Set Data --- //
 
@@ -126,8 +133,8 @@ baseballApp.directive("lineGraph", function($window){
 				});
 
 				// Find the minimum and maximum dates in the dataset
-				var minX = d3.min(scope.days, function(kv){ return d3.min(kv.days, function(d){ return d.date; })});
-				var maxX = d3.max(scope.days, function(kv){ return d3.max(kv.days, function(d){ return d.date; })});
+				minX = d3.min(scope.days, function(kv){ return d3.min(kv.days, function(d){ return d.date; })});
+				maxX = d3.max(scope.days, function(kv){ return d3.max(kv.days, function(d){ return d.date; })});
 				
 				// Get minimum and maximum wins over .500
 				minY = d3.min(scope.days, function(kv){ return d3.min(kv.days, function(d){ return d.wins_over; })});
@@ -218,6 +225,9 @@ baseballApp.directive("lineGraph", function($window){
 						})
 						.remove();
 
+				// Remove ares
+				svg.selectAll("g.areaGroup").remove();
+
 				// Remove Y axis numbers
 				svg.selectAll("text.yAxisNum")
 						.attr("fill", "rgba(0,0,0,1)")
@@ -267,21 +277,21 @@ baseballApp.directive("lineGraph", function($window){
 											svg.select("g.areaGroup")
 												.transition()
 												.duration(1000)
-												.attr("transform", "translate(0," + (height - y(teamMin)) + ")")
+												.attr("transform", "translate(0," + (height - y(teamMin) - bottomPadding) + ")")
 
 											// Move Y axis label
 											svg.select("text.yAxis")
 												.transition()
 												.duration(1000)
-												.attr("y", (height - 70) )
-												.attr("transform", "rotate(270 " + (width - 10) + "," + (height -70) + ")");
+												.attr("y", (height - bottomPadding - 70) )
+												.attr("transform", "rotate(270 " + (width - 10) + "," + (height - bottomPadding - 70) + ")");
 
 											// Move Y axis 0
 											svg.select("text.yAxisZero")
 												.transition()
 												.duration(1000)
 												.attr("transform", function(){
-													return (teamMin < -1 ) ? "translate(0," + (height - y(teamMin)) + ")" : "translate(0," + ((height - topPadding)/2) + ")"
+													return (teamMin < -1 ) ? "translate(0," + ((height - y(teamMin)) - bottomPadding) + ")" : "translate(0," + (((height - topPadding- bottomPadding)/2) + 5) + ")"
 												});
 
 										});
@@ -359,8 +369,8 @@ baseballApp.directive("lineGraph", function($window){
 				svg.select("text.yAxis")
 						.transition()
 						.duration(1000)
-						.attr("y", ((height + y(maxY - minY) - topPadding)))
-						.attr("transform", "rotate(270 " + (width - 10) + "," + (height + y(maxY - minY) - topPadding) + ")");
+						.attr("y", ((height + y(maxY - minY) - topPadding - bottomPadding)))
+						.attr("transform", "rotate(270 " + (width - 10) + "," + (height + y(maxY - minY) - topPadding - bottomPadding) + ")");
 
 				// Move Y Axis Text
 				svg.select("text.yAxisZero")
@@ -451,8 +461,8 @@ baseballApp.directive("lineGraph", function($window){
 				var yAxis = svg.append("text")
 								.attr("class", "yAxis")
 								.attr("x", width - 10)
-								.attr("y", ((height + y(maxY - minY) - topPadding)))
-								.attr("transform", "rotate(270 " + (width - 10) + "," + (height + y(maxY - minY) - topPadding) + ")")
+								.attr("y", ((height + y(maxY - minY) - topPadding - bottomPadding)))
+								.attr("transform", "rotate(270 " + (width - 10) + "," + (height + y(maxY - minY) - topPadding - bottomPadding) + ")")
 								.attr("text-anchor", "middle")
 								.attr("font-family", "Open Sans Condensed")
 								.text("WINS - LOSSES");
@@ -461,7 +471,7 @@ baseballApp.directive("lineGraph", function($window){
 				svg.append("text")
 						.attr("class", "yAxisZero")
 						.attr("x", width - 50)
-						.attr("y", ((height + y(maxY - minY) - topPadding + 5)))
+						.attr("y", ((height + y(maxY - minY) - topPadding - bottomPadding + 5)))
 						.attr("text-anchor", "middle")
 						.attr("font-family", "Open Sans Condensed")
 						.text("0");
@@ -481,6 +491,20 @@ baseballApp.directive("lineGraph", function($window){
 						.attr("text-anchor", "middle")
 						.attr("font-family", "Open Sans Condensed")
 						.text(minY);
+
+
+				// Draw X Axis
+				svg.append("text")
+						.attr("class", "xAxis")
+						.attr("x", 0)
+						.attr("y", height - 5)
+						.text(dateFormat(minX));
+
+				svg.append("text")
+						.attr("class", "xAxis")
+						.attr("x", width - rightPadding - 60)
+						.attr("y", height - 5)
+						.text(dateFormat(maxX));
 
 
 				var graphLine = svg.selectAll("path.line")
