@@ -12,10 +12,20 @@ baseballApp.directive("timeline", function($window){
 
 			// The watch functions make it so that the graph does not draw until after the data has been pulled in from the API.
 
-			// Watch Days
+			// Watch Events
 			scope.$watch( 'events', function(){
 
-				if (scope.events.length){
+				if (scope.events.length && scope.days.length){
+					setData();
+					drawTimeline();
+				}
+
+			});
+
+			// Watch Days
+			scope.$watch( 'days', function(){
+
+				if (scope.events.length && scope.days.length){
 					setData();
 					drawTimeline();
 				}
@@ -23,7 +33,7 @@ baseballApp.directive("timeline", function($window){
 			});
 
 			// Watch current team
-			scope.$watch( 'teamView', function(){
+			scope.$watch( 'currentTeam', function(){
 
 				if (scope.teamView == true){
 					colorNodes()
@@ -158,7 +168,6 @@ baseballApp.directive("timeline", function($window){
 			function colorNodes(){
 
 				svg.selectAll("circle.event")
-						.attr("fill", "#fdae61")
 						.transition()
 						.duration(1000)
 						.attr("fill", function(d){

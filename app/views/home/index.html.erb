@@ -14,17 +14,22 @@
 					<h2>{{currentTeam.city}} {{currentTeam.name}}</h2>
 					<div ng-show="currentTeam.id == 'CHC'">The 1908 season represents the last season in which the Chicago Cubs won the World Series. Throughout the season, the team managed to stay above a .500 win percentage. The team managed to maintain a first place position for much of the first half, but fell to third in the second half. Thanks to a strong finish, the Cubs were able to tie the New York Giants for first place. After beating the Giants in a one-game playoff, the team defeated the Detroit Tigers to win the World Series. </div>
 					<div ng-show="currentTeam.id == 'NYG'">The New York Giants had a strong season in 1908. After spending the first half of the season hover just above a .500 win percentage, the team surged in the second half, managing to finish the season tied for first with the Chicago Cubs. Unfortunately, a unfortunate base-running mistake by Fred Merkle, known as <a href="http://en.wikipedia.org/wiki/Merkle's_Boner">Merkle's Boner</a>, cost the team sole possession of first place. The team then lost a one-game playoff to determine the winner of the National League Pennant.</div>
+					<div ng-show="currentTeam.id == 'PIT'">The Pittsburgh Pirates had a remarkably strong season in 1908. Tied for first place on the last game of the season, October 4, the team lost 5-2 to the Cubs in Chicago. Noteworthy that season was the performance of Shortstop <a href="http://en.wikipedia.org/wiki/Honus_Wagner">Honus Wagner</a>, who led the Major Leagues in both AVG (.354) and RBIs (109) and was just two home runs short of the triple crown. He was also the leader in stolen bases (53), on-base percentage (.415), and slugging percentage (.542).</div>
+				</div>
+
+				<div class="teamTags">
+					<team-tag class="teamTag {{t.id}}" ng-repeat="t in teams" id="{{t.id}}" ng-click="getThisTeam(t.id)">{{t.id}}</team-tag>
 				</div>
 
 			</div>
 			
 			<div line-graph id="line-graph" ng-click="getTeamData" ng-mousemove="getDayGames" ng-mouseleave="removeGameTooltip"></div>
-			<game-tooltip ng-show="gameTooltipView"></game-tooltip>
+			<game-tooltip ng-show="gameTooltipView" ng-class="{ fadeIn : gameTooltipView }"></game-tooltip>
 
 			<!-- <h3>Baseball Events</h3> -->
 			<div timeline id="time-line" ng-mouseover="getEventData" ng-mouseout="removeEventTooltip"></div>
 
-			<event-tooltip ng-show="eventTooltipView"></game-tooltip>
+			<event-tooltip ng-show="eventTooltipView" ng-class="{ fadeIn : eventTooltipView}"></event-tooltip>
 		</div>
 
 

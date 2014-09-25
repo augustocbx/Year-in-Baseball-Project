@@ -24,20 +24,40 @@ baseballApp.directive("lineGraph", function($window){
 				};
 			});
 
-			// Watch Date
 
-			// scope.$watch( 'date', function(){
+			// Watch Line and Button Clicks
+
+			// When someone clicks on a team button, run the redrawLines or selectTeam function
+
+			scope.$watch( 'currentTeam', function(){
 	
-			// 	writeDate();
+				// run after button click
+				if (scope.teamView == true){
+					if (scope.currentTeamCopy == "none"){
+						selectTeam(scope.currentTeam);
+						scope.currentTeamCopy = angular.copy(scope.currentTeam);
+					}
+					else{
+						redrawGroup(scope.currentTeam);
+						scope.currentTeamCopy = angular.copy(scope.currentTeam)
+					}
+				}
+				else if (scope.teamView == false){
+					redrawLines();
+					scope.currentTeamCopy = "none"
+				}
 
-			// });
+			});
+
+
+
 
 
 			// --- Draw the SVG --- //
 
 			var width = 800;
-			var height = 500;
-			var topPadding = 200;
+			var height = 600;
+			var topPadding = 300;
 			var rightPadding = 70;
 			var bottomPadding = 40;
 
@@ -97,6 +117,13 @@ baseballApp.directive("lineGraph", function($window){
 							.y0(function(d) { return y(d.wins_over)})
 							.y1(function(d) { return y(d.wins_over)});
 
+			// Flatten the area under the lines
+			var flattenArea = d3.svg.area()
+							.interpolate("basis")
+							.x(function(d) { return x(d.date) })
+							.y0(function(d) { return y(0)})
+							.y1(function(d) { return y(0)});
+
 			// Declare variables that can be accessed by functions
 			var area;
 			var daySelected;
@@ -140,50 +167,6 @@ baseballApp.directive("lineGraph", function($window){
 							.y1(function(d) { return y(d.wins_over)});
 			};
 
-			
-			// --- Hover Functions --- //
-
-			// Highlight Line
-
-			scope.highlightLine = function(d){
-
-				var lineId = "path#" + d.id;
-				var areaId = "path#" + d.id + "_area";
-
-
-				d3.selectAll("path.line")
-						.style("opacity", .15);
-
-				d3.select(lineId)
-						.style("stroke-width", "8px" )
-						.style("opacity", 1)
-						.moveToFront();
-
-				svg.append("text")
-						.datum(d)
-						.text(function(d){
-							return d.id
-						})
-						.attr("class", "teamName")
-						.attr("x", width - rightPadding - 20)
-						.attr("y", y(d.days[d.days.length-1].wins_over) - 20)
-						.attr("font-family", "Open Sans Condensed")
-						.attr("font-size", "20px");
-
-						
-			};
-
-			// Highlight All Lines
-
-			function highlightAll(){
-
-				d3.selectAll("path.line")
-					.style("opacity", 1)
-					.style("stroke-width", "2px");
-
-				d3.selectAll("text.teamName").remove();
-
-			};
 
 			// Remove individual day area on area path
 
@@ -195,10 +178,12 @@ baseballApp.directive("lineGraph", function($window){
 			// --- Click Functions --- //
 
 
-			// Click team to get data on team
-			function selectTeam(keepLine, d){
+			// - Draw Group - //
 
-				scope.getTeamData(d);
+			// Click team to get data on team
+			function selectTeam(d){
+
+				scope.getTeamData(d.id);
 
 				// Find the minimum and maximum wins_over in the dataset
 				var teamMin = d3.min(d.days, function(d){ return d.wins_over; });
@@ -231,7 +216,6 @@ baseballApp.directive("lineGraph", function($window){
 						.attr("fill", "rgba(0,0,0,0)")
 						.remove();
 
-
 				// Generate the area
 				var graphArea = svg.append("g")
 									.attr("class", "areaGroup");
@@ -251,7 +235,7 @@ baseballApp.directive("lineGraph", function($window){
 										.style("opacity", 1)
 										.style("cursor", "pointer")
 										.on("click", function(){
-											redrawLines();
+											scope.getTeamData();
 										})
 										.on("mousemove", function(d){
 											getDayGames(this, d);
@@ -288,6 +272,81 @@ baseballApp.directive("lineGraph", function($window){
 					removeDayArea();
 					scope.removeGameTooltip();
 				});
+			};
+
+			// - Redraw Group - //
+
+			function redrawGroup(d){
+
+				// Get the team data
+				scope.getTeamData(d.id);
+
+				// Find the minimum and maximum wins_over in the dataset
+				teamMin = d3.min(d.days, function(d){ return d.wins_over; });
+
+				// Select the group
+				svg.selectAll("path.area")
+					.transition()
+					.duration(500)
+					.attr("d", function(){
+						return flattenArea(d.days)
+					})
+					.remove();
+
+				// Generate the area
+				graphArea = svg.selectAll("g.areaGroup");
+
+				//Move area group
+				svg.select("g.areaGroup")
+						.transition()
+						.duration(500)
+						.attr("transform", "translate(0," + (height - y(teamMin) - bottomPadding) + ")")
+						.each("end", function(){
+
+							graphArea.append("path")
+										.datum(d)
+										.attr("d", function(d){
+											return flattenArea(d.days)
+										})
+										.attr("class", "area")
+										.attr("id", function(d){
+											return d.id
+										})
+										.attr("fill", function(d){
+											return scope.colorTeam(d.id);
+										})
+										.style("opacity", 1)
+										.style("cursor", "pointer")
+										.on("click", function(){
+											scope.getTeamData();
+										})
+										.on("mousemove", function(d){
+											getDayGames(this, d);
+										})
+										.transition()
+										.duration(500)
+										.attr("d", function(d){
+											return area(d.days)
+										})
+
+						});
+
+						// Move Y axis label
+						svg.select("text.yAxis")
+							.transition()
+							.duration(500)
+							.attr("y", (height - bottomPadding - 70) )
+							.attr("transform", "rotate(270 " + (width - 10) + "," + (height - bottomPadding - 70) + ")");
+
+						// Move Y axis 0
+						svg.select("text.yAxisZero")
+							.transition()
+							.duration(500)
+							.attr("transform", function(){
+								return (teamMin < -1 ) ? "translate(0," + ((height - y(teamMin)) - bottomPadding) + ")" : "translate(0," + (((height - topPadding- bottomPadding)/2) + 5) + ")"
+							});
+
+
 			};
 
 
@@ -335,7 +394,7 @@ baseballApp.directive("lineGraph", function($window){
 											.style("cursor", "pointer")
 											.on("click", function(){
 												removeDayArea();
-												redrawLines();
+												scope.getTeamData();
 											});
 				};
 
@@ -347,7 +406,7 @@ baseballApp.directive("lineGraph", function($window){
 			// Click are to redraw the lines on the graph
 			function redrawLines(){
 
-				// Get data on teams
+				// Change View
 				scope.getTeamData();
 
 				// Remove the tooltip
@@ -413,11 +472,10 @@ baseballApp.directive("lineGraph", function($window){
 													scope.highlightLine(d);
 												})
 												.on("mouseout", function(){
-													highlightAll()
+													scope.highlightAll()
 												})
 												.on("click", function(d){
-													var keepLine = this;
-													selectTeam(keepLine, d);
+													scope.getTeamData(d.id);
 												})
 												.transition()
 												.duration(1000)
@@ -516,11 +574,10 @@ baseballApp.directive("lineGraph", function($window){
 										scope.highlightLine(d);
 									})
 									.on("mouseout", function(){
-										highlightAll()
+										scope.highlightAll()
 									})
 									.on("click", function(d){
-										var keepLine = this;
-										selectTeam(keepLine, d);
+										scope.getTeamData(d.id);
 									});
 
 				

@@ -6,6 +6,7 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 
 	// Create a team view variable. Team info will show when this true;
 	$scope.teamView = false;
+	$scope.thisTeam;
 
 
 	// -- Tool Tips -- //
@@ -15,6 +16,7 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 
 	// Create a view for the gameTooltip
 	$scope.eventTooltipView = false;
+	
 
 
 
@@ -113,12 +115,13 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 
 	// When the user selects a given team, information will show on the team.
 
-	$scope.currentTeam;
+	$scope.currentTeam = "none";
+	$scope.currentTeamCopy = "none";
 
 	$scope.getTeamData = function(team){
-		if (team){$scope.teams.forEach(
+		if (team){$scope.days.forEach(
 			function(t){
-				if (t.id == team.id){
+				if (t.id == team){
 					$scope.currentTeam = t;
 				};
 			});
@@ -126,8 +129,27 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 		}
 		else if (!team){
 			$scope.teamView = false;
+			$scope.currentTeam = "none";
 		}
 	};
+
+
+	// Team tag function
+	$scope.getThisTeam = function(d){
+		if ( $scope.currentTeam !== "none"){
+			if ($scope.currentTeam.id == d){
+				$scope.getTeamData();
+			}
+			else{
+				$scope.getTeamData(d);
+			}
+		}
+		else{
+			$scope.getTeamData(d);
+		}
+		
+	};
+
 
 	// --- Current Day Data --- //
 
@@ -239,6 +261,50 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 
 	$scope.removeEventTooltip = function(){
 		$scope.eventTooltipView = false;
+	};
+
+
+	// -------- Line Functions -------- //
+
+	// --- Mouse Functions --- //
+
+	// Highlight Line
+
+	$scope.highlightLine = function(d){
+
+		if (typeof d == "string"){
+			var lineId = "path#" + d;
+			var areaId = "path#" + d + "_area";
+			$('team-tag').not($('team-tag#'+d)).css("opacity", ".1");
+		}
+		else {
+			var lineId = "path#" + d.id;
+			var areaId = "path#" + d.id + "_area";
+			$('team-tag').not($('team-tag#'+d.id)).css("opacity", ".1");
+		}
+
+		d3.selectAll("path.line")
+				.style("opacity", .15);
+
+		d3.select(lineId)
+				.style("stroke-width", "6px" )
+				.style("opacity", 1)
+				.moveToFront();
+				
+	};
+
+	// Highlight All Lines
+
+	$scope.highlightAll = function(){
+
+		$('.teamTag').css("opacity", "1");
+
+		d3.selectAll("path.line")
+			.style("opacity", 1)
+			.style("stroke-width", "2px");
+
+		d3.selectAll("text.teamName").remove();
+
 	};
 
 }])

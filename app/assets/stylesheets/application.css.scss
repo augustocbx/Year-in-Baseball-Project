@@ -42,8 +42,22 @@
 
 	#visTextContainer{
 		position: absolute;
-		width: 400px;
+		width: 550px;
 		z-index: 1;
+
+		.teamTags{
+		position: relative;
+		width: 300px;
+
+			.teamTag{
+				float: left;
+				padding: 2px 5px;
+				margin: 10px 5px 0 0;
+				border-radius: 3px;
+				color: #fff;
+				cursor: pointer;
+			}
+		}
 
 	}
 
@@ -83,7 +97,6 @@
 			}
 
 			.individualGameData{
-				padding: 0 0 10px 0;
 
 				.result{
 					width: 40%;
@@ -159,4 +172,32 @@
 		}
 	}
 
+}
+
+
+/* Animations */
+
+@-webkit-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.fadeIn {
+  -webkit-animation: fadeIn .4s;
+  animation: fadeIn .4s;
 }
