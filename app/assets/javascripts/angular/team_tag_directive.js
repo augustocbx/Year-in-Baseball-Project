@@ -8,7 +8,7 @@ baseballApp.directive("teamTag", function($window){
 		template: "",
 		link: function(scope, elem, attrs){
 
-			scope.$watch( 'teams', function(){
+			scope.$watch( 'days', function(){
 
 				elem.css({
 					background: scope.colorTeam(attrs.id)

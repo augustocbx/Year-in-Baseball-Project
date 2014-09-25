@@ -5,7 +5,7 @@
 baseballApp.directive("lineGraph", function($window){
 	return{
 		restrict: "EA",
-		template: "<svg width='800', height='500', id='lineGraphCanvas'></svg>",
+		template: "<svg width='800', height='530', id='lineGraphCanvas'></svg>",
 		link: function(scope, elem, attrs){
 
 			// --- Watch Functions --- //
@@ -56,8 +56,8 @@ baseballApp.directive("lineGraph", function($window){
 			// --- Draw the SVG --- //
 
 			var width = 800;
-			var height = 600;
-			var topPadding = 300;
+			var height = 530;
+			var topPadding = 200;
 			var rightPadding = 70;
 			var bottomPadding = 40;
 
@@ -151,7 +151,7 @@ baseballApp.directive("lineGraph", function($window){
 				minX = d3.min(scope.days, function(kv){ return d3.min(kv.days, function(d){ return d.date; })});
 				maxX = d3.max(scope.days, function(kv){ return d3.max(kv.days, function(d){ return d.date; })});
 				
-				// Get minimum and maximum wins over .500
+				// Get minimum and maximum wins over .700
 				minY = d3.min(scope.days, function(kv){ return d3.min(kv.days, function(d){ return d.wins_over; })});
 				maxY = d3.max(scope.days, function(kv){ return d3.max(kv.days, function(d){ return d.wins_over; })});
 
@@ -183,6 +183,8 @@ baseballApp.directive("lineGraph", function($window){
 			// Click team to get data on team
 			function selectTeam(d){
 
+				console.log(scope.currentTeam)
+
 				scope.getTeamData(d.id);
 
 				// Find the minimum and maximum wins_over in the dataset
@@ -191,7 +193,7 @@ baseballApp.directive("lineGraph", function($window){
 				// Remove lines		
 				svg.selectAll("path.line")
 						.transition()
-						.duration(1000)
+						.duration(700)
 						.style("opacity", 0)
 						.attr("d", function(d){
 							return foldLines(d.days)
@@ -205,14 +207,14 @@ baseballApp.directive("lineGraph", function($window){
 				svg.selectAll("text.yAxisNum")
 						.attr("fill", "rgba(0,0,0,1)")
 						.transition()
-						.duration(1000)
+						.duration(700)
 						.attr("fill", "rgba(0,0,0,0)");
 
 				// Remove team name from line
 				svg.select("text.teamName")
 						.attr("fill", "rgba(0,0,0,1)")
 						.transition()
-						.duration(1000)
+						.duration(700)
 						.attr("fill", "rgba(0,0,0,0)")
 						.remove();
 
@@ -241,27 +243,27 @@ baseballApp.directive("lineGraph", function($window){
 											getDayGames(this, d);
 										})
 										.transition()
-										.duration(1000)
+										.duration(700)
 										.attr("d", function(d){
 											return area(d.days)
 										})
 										.each("end", function(){
 											svg.select("g.areaGroup")
 												.transition()
-												.duration(1000)
+												.duration(700)
 												.attr("transform", "translate(0," + (height - y(teamMin) - bottomPadding) + ")")
 
 											// Move Y axis label
 											svg.select("text.yAxis")
 												.transition()
-												.duration(1000)
+												.duration(700)
 												.attr("y", (height - bottomPadding - 70) )
 												.attr("transform", "rotate(270 " + (width - 10) + "," + (height - bottomPadding - 70) + ")");
 
 											// Move Y axis 0
 											svg.select("text.yAxisZero")
 												.transition()
-												.duration(1000)
+												.duration(700)
 												.attr("transform", function(){
 													return (teamMin < -1 ) ? "translate(0," + ((height - y(teamMin)) - bottomPadding) + ")" : "translate(0," + (((height - topPadding- bottomPadding)/2) + 5) + ")"
 												});
@@ -287,7 +289,7 @@ baseballApp.directive("lineGraph", function($window){
 				// Select the group
 				svg.selectAll("path.area")
 					.transition()
-					.duration(500)
+					.duration(700)
 					.attr("d", function(){
 						return flattenArea(d.days)
 					})
@@ -299,7 +301,7 @@ baseballApp.directive("lineGraph", function($window){
 				//Move area group
 				svg.select("g.areaGroup")
 						.transition()
-						.duration(500)
+						.duration(700)
 						.attr("transform", "translate(0," + (height - y(teamMin) - bottomPadding) + ")")
 						.each("end", function(){
 
@@ -324,7 +326,7 @@ baseballApp.directive("lineGraph", function($window){
 											getDayGames(this, d);
 										})
 										.transition()
-										.duration(500)
+										.duration(700)
 										.attr("d", function(d){
 											return area(d.days)
 										})
@@ -334,14 +336,14 @@ baseballApp.directive("lineGraph", function($window){
 						// Move Y axis label
 						svg.select("text.yAxis")
 							.transition()
-							.duration(500)
+							.duration(700)
 							.attr("y", (height - bottomPadding - 70) )
 							.attr("transform", "rotate(270 " + (width - 10) + "," + (height - bottomPadding - 70) + ")");
 
 						// Move Y axis 0
 						svg.select("text.yAxisZero")
 							.transition()
-							.duration(500)
+							.duration(700)
 							.attr("transform", function(){
 								return (teamMin < -1 ) ? "translate(0," + ((height - y(teamMin)) - bottomPadding) + ")" : "translate(0," + (((height - topPadding- bottomPadding)/2) + 5) + ")"
 							});
@@ -415,25 +417,25 @@ baseballApp.directive("lineGraph", function($window){
 				// Move Y Axis
 				svg.select("text.yAxis")
 						.transition()
-						.duration(1000)
+						.duration(700)
 						.attr("y", ((height + y(maxY - minY) - topPadding - bottomPadding)))
 						.attr("transform", "rotate(270 " + (width - 10) + "," + (height + y(maxY - minY) - topPadding - bottomPadding) + ")");
 
 				// Move Y Axis Text
 				svg.select("text.yAxisZero")
 						.transition()
-						.duration(1000)
+						.duration(700)
 						.attr("transform", "translate(0,0)");
 
 				// Redraw Y Axis Numbers
 				svg.selectAll("text.yAxisNum")
 						.transition()
-						.duration(1000)
+						.duration(700)
 						.attr("fill", "rgba(0,0,0,1)");
 
 				svg.selectAll("g.areaGroup")
 							.transition()
-							.duration(1000)
+							.duration(700)
 							.attr("transform", "translate(0,0)")
 							.each("end", function(){
 								
@@ -444,7 +446,7 @@ baseballApp.directive("lineGraph", function($window){
 										return foldLines(d.days);
 									})
 									.transition()
-									.duration(1000)
+									.duration(700)
 									.attr("d", function(d){
 										return removeArea(d.days)
 									})
@@ -478,7 +480,7 @@ baseballApp.directive("lineGraph", function($window){
 													scope.getTeamData(d.id);
 												})
 												.transition()
-												.duration(1000)
+												.duration(700)
 												.attr("d", function(d){
 													return line(d.days);
 												})

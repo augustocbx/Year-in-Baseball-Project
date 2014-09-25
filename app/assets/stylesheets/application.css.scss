@@ -28,16 +28,23 @@
 	width: 800px;
 	font-family: "Open Sans Condensed", sans;
 
+	h1{
+		text-align: center;
+		font-size: 50px;
+		margin: 20px 0 20px;
+	}
+
 	h2{
 		font-size: 40px;
 		font-weight: 300;
-		margin: 5px 0;
+		margin: 2px 0;
 	}
 
 	h3{
 		font-size: 20px;
 		font-weight: 300;
-		margin: 10px 0;
+		margin: 0 0 80px;
+		text-align: center;
 	}
 
 	#visTextContainer{
@@ -46,7 +53,8 @@
 		z-index: 1;
 
 		.teamTags{
-		position: relative;
+		position: absolute;
+		top: 200px;
 		width: 300px;
 
 			.teamTag{
@@ -68,7 +76,7 @@
 	game-tooltip{
 		position: absolute;
 		width: 150px;
-		padding: 10px 10px 25px;
+		padding: 10px 10px 15px;
 		background-color: rgba(255,255,255,1);
 		border: solid black 1px;
 		border-radius: 3px;
@@ -97,6 +105,7 @@
 			}
 
 			.individualGameData{
+				height: 40px;
 
 				.result{
 					width: 40%;
@@ -143,11 +152,17 @@
 			text-align: center;
 		}
 
+		.seasonData{
+			margin: 15px 0 0;
+			text-align: center;
+			font-size: 14px;
+		}
+
 	}
 
 	#time-line{
 		position: relative;
-		margin: 2px 0;
+		margin: 2px 0 120px;
 	}
 
 	event-tooltip{

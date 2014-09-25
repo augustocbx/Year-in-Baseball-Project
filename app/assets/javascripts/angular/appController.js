@@ -117,12 +117,15 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 
 	$scope.currentTeam = "none";
 	$scope.currentTeamCopy = "none";
+	$scope.teamInfo;
 
 	$scope.getTeamData = function(team){
 		if (team){$scope.days.forEach(
 			function(t){
 				if (t.id == team){
 					$scope.currentTeam = t;
+					// Get full data on the team
+					$scope.getTeamInfo(t);
 				};
 			});
 			$scope.teamView = true;
@@ -134,7 +137,7 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 	};
 
 
-	// Team tag function
+	// Team tag button function
 	$scope.getThisTeam = function(d){
 		if ( $scope.currentTeam !== "none"){
 			if ($scope.currentTeam.id == d){
@@ -150,6 +153,14 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 		
 	};
 
+	// Get team info for graph text
+	$scope.getTeamInfo = function(t){
+		for (i = 0; i < $scope.teams.length; ++i){
+			if ($scope.teams[i].id == t.id){
+				$scope.teamInfo = $scope.teams[i]
+			}
+		}
+	};
 
 	// --- Current Day Data --- //
 
@@ -164,10 +175,11 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 	$scope.currentGameData = [];
 
 	$scope.getDayData = function(top, left, d){
+		$scope.currentDateData = d;
 		$scope.currentGameData = [];
 		$scope.gameTooltipView = true;
 		$scope.gameTooltipLeft = left - 75;
-		$scope.gameTooltipTop = top - 250;
+		$scope.gameTooltipTop = top - 50;
 		
 		// -- Data related to this day -- //
 
