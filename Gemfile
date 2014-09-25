@@ -47,6 +47,12 @@ group :development do
 	gem 'shoulda-matchers'
 end
 
+# For Heroku
+gem 'rails_12factor', group: :production
+gem 'unicorn'
+
+ruby "2.1.2"
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
