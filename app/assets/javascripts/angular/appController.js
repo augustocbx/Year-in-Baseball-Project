@@ -179,7 +179,7 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 		$scope.currentGameData = [];
 		$scope.gameTooltipView = true;
 		$scope.gameTooltipLeft = left - 75;
-		$scope.gameTooltipTop = top - 50;
+		$scope.gameTooltipTop = top - 80;
 		
 		// -- Data related to this day -- //
 
