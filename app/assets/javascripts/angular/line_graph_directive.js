@@ -56,8 +56,8 @@ baseballApp.directive("lineGraph", function($window){
 			// --- Draw the SVG --- //
 
 			var width = 800;
-			var height = 530;
-			var topPadding = 200;
+			var height = 560;
+			var topPadding = 230;
 			var rightPadding = 70;
 			var bottomPadding = 40;
 
