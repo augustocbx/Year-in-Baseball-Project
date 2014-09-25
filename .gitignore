@@ -16,4 +16,4 @@
 /tmp
 
 Gemfile.lock
-.env
+.env.env
