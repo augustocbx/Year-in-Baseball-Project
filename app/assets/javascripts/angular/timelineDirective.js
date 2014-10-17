@@ -78,7 +78,9 @@ baseballApp.directive("timeline", function($window){
 
 				// Parse each date to make it a JavaScript date
 				scope.events.forEach(function(d){
-						d.date = parseDate(d.date);
+						if (typeof d.date == "string"){
+							d.date = parseDate(d.date);
+						}
 				});
 
 				// Find the minimum and maximum dates in the dataset

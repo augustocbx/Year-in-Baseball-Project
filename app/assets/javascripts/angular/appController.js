@@ -1,4 +1,4 @@
-baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'GamesData', 'DaysData', 'TeamsData', 'EventsData', function($scope, $http, $timeout, GamesData, DaysData, TeamsData, EventsData){
+baseballApp.controller('BaseballController', ['$scope', '$http', '$resource', '$q', '$timeout', 'GamesData', 'DaysData', 'TeamsData', 'EventsData', function($scope, $http, $resource, $q, $timeout, GamesData, DaysData, TeamsData, EventsData){
 
 	
 	// -------- Views -------- //
@@ -18,10 +18,16 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 	$scope.eventTooltipView = false;
 	
 
+	// ------ Initialize ------ //
+
+	$scope.initialize = true;
 
 
 
 	// -------- APIs -------- //
+
+	// Year variable to know what year to get data for
+	$scope.year = '2013';
 
 
 	// --- Games API --- //
@@ -33,9 +39,9 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 	$scope.games = [];
 
 	// Get games data from the API
-	GamesData.getData().then(function(json){
+	GamesData.getData($scope.year).then(function(json){
 		$scope.games = json.data;
-	})
+	});
 
 
 	// --- Days API --- //
@@ -47,7 +53,7 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 	$scope.days = [];
 
 	// Get days data from the API
-	DaysData.getData().then(function(json){
+	DaysData.getData($scope.year).then(function(json){
 		$scope.days = json.data;
 	});
 
@@ -59,7 +65,7 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 	$scope.teams = [];
 
 	// Get the teams data from the API
-	TeamsData.getData().then(function(json){
+	TeamsData.getData($scope.year).then(function(json){
 		$scope.teams = json.data;
 	});
 
@@ -71,12 +77,40 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 	$scope.events = []
 
 	// Get the events data from API
-	EventsData.getData().then(function(json){
+	EventsData.getData($scope.year).then(function(json){
 		$scope.events = json.data;
 	});
 
 
 	// -------- Functions -------- //
+
+
+	// --- Change Years --- //
+
+	$scope.changeYear = function(year){
+
+		
+
+		// Get games data from the API
+		GamesData.getData(year).then(function(json){
+			$scope.games = json.data;
+		});
+
+		// Get the teams data from the API
+		TeamsData.getData(year).then(function(json){
+			$scope.teams = json.data;
+			// Get days data from the API
+			DaysData.getData(year).then(function(json){
+				$scope.days = json.data;
+			});
+		});
+
+		// Get the events data from API
+		EventsData.getData(year).then(function(json){
+			$scope.events = json.data;
+		});
+
+	};
 
 	
 	// --- Date Formatting --- //
@@ -99,8 +133,14 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$timeout', 'Ga
 
 	// Color the lines according to their teams
 
-	$scope.colorTeam = function(id){
-		var colors = ["#006837","#1a9850","#66bd63","#a6d96a","#fee08b", "#fdae61", "#f46d43", "#a50026"]  ;
+	$scope.colorTeam = function(id, teams){
+
+		if (teams.length == 8){
+			var colors = ["#006837","#1a9850","#66bd63","#a6d96a","#fee08b", "#fdae61", "#f46d43", "#a50026"]  ;
+		}
+		else if (teams.length == 5){
+			var colors = ["#006837","#66bd63","#fee08b", "#f46d43", "#a50026"]  ;
+		}
 
 		for (i = 0; i < $scope.days.length; ++i){
 			if (id == $scope.days[i].id){

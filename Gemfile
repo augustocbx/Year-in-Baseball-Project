@@ -32,6 +32,7 @@ gem 'spring',        group: :development
 gem 'angularjs-rails'
 gem 'active_model_serializers'
 gem 'angular-rails-templates'
+gem 'angularjs-rails-resource', '~> 1.2.1'
 
 # Use debugging tools
 group :development do

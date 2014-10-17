@@ -17,10 +17,32 @@ baseballApp.directive("lineGraph", function($window){
 			scope.$watch( 'days', function(){
 
 				//do not run until scope.days has data
-				if (scope.days.length){
+				if (scope.days.length && scope.teams.length){
 					
-					setData();
-					drawLines();
+					setData(function(){
+						drawLines();
+					});
+
+					if (scope.initialize == true){
+						scope.initialize = false;
+					}
+				};
+			});
+
+			// Watch Days
+
+			scope.$watch( 'teams', function(){
+
+				//do not run until scope.days has data
+				if (scope.days.length && scope.teams.length){
+					
+					if (scope.initialize == true){
+						setData(function(){
+							drawLines(); 
+						});
+						scope.initialize = false;
+					}
+
 				};
 			});
 
@@ -138,12 +160,14 @@ baseballApp.directive("lineGraph", function($window){
 
 			// Runs after the data loads
 
-			function setData(){
+			function setData(callback){
 				
 				// Parse each date to make it a JavaScript date
 				scope.days.forEach(function(kv){
 					kv.days.forEach(function(d){
-						d.date = parseDate(d.date);
+						if (typeof d.date == "string"){
+							d.date = parseDate(d.date);
+						}
 					})
 				});
 
@@ -165,6 +189,8 @@ baseballApp.directive("lineGraph", function($window){
 							.x(function(d) { return x(d.date) })
 							.y0(height + y(maxY - minY) - topPadding - bottomPadding)
 							.y1(function(d) { return y(d.wins_over)});
+
+				callback && callback();
 			};
 
 
@@ -232,7 +258,7 @@ baseballApp.directive("lineGraph", function($window){
 											return d.id
 										})
 										.attr("fill", function(d){
-											return scope.colorTeam(d.id);
+											return scope.colorTeam(d.id, scope.teams);
 										})
 										.style("opacity", 1)
 										.style("cursor", "pointer")
@@ -315,7 +341,7 @@ baseballApp.directive("lineGraph", function($window){
 											return d.id
 										})
 										.attr("fill", function(d){
-											return scope.colorTeam(d.id);
+											return scope.colorTeam(d.id, scope.teams);
 										})
 										.style("opacity", 1)
 										.style("cursor", "pointer")
@@ -467,7 +493,7 @@ baseballApp.directive("lineGraph", function($window){
 												})
 												.style("fill", "none")
 												.style("stroke", function(d){
-													return scope.colorTeam(d.id);
+													return scope.colorTeam(d.id, scope.teams);
 												})
 												.style("opacity", 0)
 												.on("mouseover", function(d){
@@ -503,6 +529,11 @@ baseballApp.directive("lineGraph", function($window){
 			// This function draws the lines for the data pulled in from the API. We will call it using a $scope.$watch function.
 
 			function drawLines(){
+
+				// Delete previous lines amd text
+				svg.selectAll('path.line').remove();
+				svg.selectAll('text').remove();
+				svg.selectAll('path.area').remove();
 
 
 				// Draw Y Axis
@@ -568,7 +599,7 @@ baseballApp.directive("lineGraph", function($window){
 									})
 									.style("fill", "none")
 									.style("stroke", function(d){
-										return scope.colorTeam(d.id);
+										return scope.colorTeam(d.id, scope.teams);
 									})
 									.style("stroke-width", "2px")
 									.style("cursor", "pointer")	
@@ -597,13 +628,12 @@ baseballApp.directive("lineGraph", function($window){
 								    .attr("width", width)
 								    .attr("class", "curtain")
 								    .attr("transform", "rotate(180)")
-								    .style("fill", "#ffffff");
-
-				svg.select("rect.curtain")
-								.transition()
-								.duration(300)
-								.attr("width", 0)
-								.ease("linear");
+								    .style("fill", "#ffffff")
+								    .transition()
+									.duration(300)
+									.attr("width", 0)
+									.ease("linear");
+								
 
 			};
 

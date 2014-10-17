@@ -1,1 +1,1 @@
-var baseballApp = angular.module('baseballApp', ['templates']);
+var baseballApp = angular.module('baseballApp', ['templates', 'ngResource']);

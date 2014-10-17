@@ -34,6 +34,7 @@ GEM
       sprockets
       tilt
     angularjs-rails (1.2.22)
+    angularjs-rails-resource (1.2.1)
     arel (5.0.1.20140414130214)
     better_errors (2.0.0)
       coderay (>= 1.0.0)
@@ -202,6 +203,7 @@ DEPENDENCIES
   active_model_serializers
   angular-rails-templates
   angularjs-rails
+  angularjs-rails-resource (~> 1.2.1)
   better_errors
   binding_of_caller
   coffee-rails (~> 4.0.0)

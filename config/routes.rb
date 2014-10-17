@@ -1,10 +1,12 @@
 Rails.application.routes.draw do
 
   scope '/api' do
-    resources :teams, defaults: {format: :json}
-    resources :games, defaults: {format: :json}
-    resources :days, defaults: {format: :json}
-    resources :events, defaults: {format: :json}
+    resources :years do
+      resources :teams, defaults: {format: :json}
+      resources :games, defaults: {format: :json}
+      resources :days, defaults: {format: :json}
+      resources :events, defaults: {format: :json}
+    end
   end
 
   get '/home', to: 'home#index', as: 'home'

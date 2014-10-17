@@ -11,7 +11,7 @@ baseballApp.directive("teamTag", function($window){
 			scope.$watch( 'days', function(){
 
 				elem.css({
-					background: scope.colorTeam(attrs.id)
+					background: scope.colorTeam(attrs.id ,scope.teams)
 				});
 
 			});
