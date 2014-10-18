@@ -16,16 +16,20 @@ baseballApp.directive("lineGraph", function($window){
 
 			scope.$watch( 'days', function(){
 
-				//do not run until scope.days has data
-				if (scope.days.length && scope.teams.length){
-					
-					setData(function(){
-						drawLines();
-					});
+				if (scope.days.length > 0){
+					scope.daysChanged = true;
+				}
 
-					if (scope.initialize == true){
-						scope.initialize = false;
-					}
+				//do not run until scope.days has data
+				if (scope.daysChanged == true && scope.teamsChanged == true){
+					
+					setData();
+					drawLines();
+
+					scope.daysChanged = false;
+					scope.teamsChanged = false;
+					scope.runEvents = true;
+					
 				};
 			});
 
@@ -33,15 +37,19 @@ baseballApp.directive("lineGraph", function($window){
 
 			scope.$watch( 'teams', function(){
 
+				if (scope.teams.length > 0){
+					scope.teamsChanged = true;
+				}
+
 				//do not run until scope.days has data
-				if (scope.days.length && scope.teams.length){
-					
-					if (scope.initialize == true){
-						setData(function(){
-							drawLines(); 
-						});
-						scope.initialize = false;
-					}
+				if (scope.daysChanged == true && scope.teamsChanged == true){
+
+					setData();
+					drawLines();
+
+					scope.daysChanged = false;
+					scope.teamsChanged = false;
+					scope.runEvents = true;
 
 				};
 			});
@@ -106,7 +114,7 @@ baseballApp.directive("lineGraph", function($window){
 
 			// Set the X Scale
 			var x = d3.time.scale()
-						.range([0,width-rightPadding]);
+						.range([10,width-rightPadding]);
 
 			// Set the Y Scale
 			var y = d3.scale.linear()
@@ -160,7 +168,7 @@ baseballApp.directive("lineGraph", function($window){
 
 			// Runs after the data loads
 
-			function setData(callback){
+			function setData(){
 				
 				// Parse each date to make it a JavaScript date
 				scope.days.forEach(function(kv){
@@ -189,8 +197,6 @@ baseballApp.directive("lineGraph", function($window){
 							.x(function(d) { return x(d.date) })
 							.y0(height + y(maxY - minY) - topPadding - bottomPadding)
 							.y1(function(d) { return y(d.wins_over)});
-
-				callback && callback();
 			};
 
 
@@ -291,7 +297,7 @@ baseballApp.directive("lineGraph", function($window){
 												.transition()
 												.duration(700)
 												.attr("transform", function(){
-													return (teamMin < -1 ) ? "translate(0," + ((height - y(teamMin)) - bottomPadding) + ")" : "translate(0," + (((height - topPadding- bottomPadding)/2) + 5) + ")"
+													return (teamMin < 0 ) ? "translate(0," + ((height - y(teamMin)) - bottomPadding) + ")" : "translate(0," + (((height - topPadding- bottomPadding)/2) + 5) + ")"
 												});
 
 										});
@@ -371,7 +377,7 @@ baseballApp.directive("lineGraph", function($window){
 							.transition()
 							.duration(700)
 							.attr("transform", function(){
-								return (teamMin < -1 ) ? "translate(0," + ((height - y(teamMin)) - bottomPadding) + ")" : "translate(0," + (((height - topPadding- bottomPadding)/2) + 5) + ")"
+								return (teamMin < 0 ) ? "translate(0," + ((height - y(teamMin)) - bottomPadding) + ")" : "translate(0," + (((height - topPadding- bottomPadding)/2) + 5) + ")"
 							});
 
 
@@ -530,10 +536,11 @@ baseballApp.directive("lineGraph", function($window){
 
 			function drawLines(){
 
-				// Delete previous lines amd text
-				svg.selectAll('path.line').remove();
-				svg.selectAll('text').remove();
-				svg.selectAll('path.area').remove();
+				// Change View
+				scope.getTeamData();
+
+				// Remove the tooltip
+				scope.removeGameTooltip();
 
 
 				// Draw Y Axis

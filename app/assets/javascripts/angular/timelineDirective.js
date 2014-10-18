@@ -12,25 +12,28 @@ baseballApp.directive("timeline", function($window){
 
 			// The watch functions make it so that the graph does not draw until after the data has been pulled in from the API.
 
+			// Watch Run Events
+			scope.$watch( 'runEvents', function(){
+
+				if (scope.runEvents = true && scope.events.length > 0){
+					setData();
+					drawTimeline();
+					scope.runEvents = false;
+				}
+			});
+
 			// Watch Events
 			scope.$watch( 'events', function(){
 
-				if (scope.events.length && scope.days.length){
+				if (scope.runEvents = true && scope.events.length > 0){
 					setData();
 					drawTimeline();
+					scope.runEvents = false;
 				}
 
+				
 			});
 
-			// Watch Days
-			scope.$watch( 'days', function(){
-
-				if (scope.events.length && scope.days.length){
-					setData();
-					drawTimeline();
-				}
-
-			});
 
 			// Watch current team
 			scope.$watch( 'currentTeam', function(){
@@ -63,7 +66,7 @@ baseballApp.directive("timeline", function($window){
 
 			// Set the X Scale
 			var x = d3.time.scale()
-						.range([0,width-rightPadding]);
+						.range([11,width-rightPadding]);
 
 			
 			// --- Data --- //
@@ -130,6 +133,9 @@ baseballApp.directive("timeline", function($window){
 
 			function drawTimeline(){
 
+				svg.selectAll("rect").remove();
+				svg.selectAll("circle.event").remove();
+
 				// Draw the line
 				svg.append("rect")
 						.attr("class", "timeline")
@@ -174,10 +180,10 @@ baseballApp.directive("timeline", function($window){
 						.duration(1000)
 						.attr("fill", function(d){
 							if (d.team_home_id == scope.currentTeam.id){
-								return scope.colorTeam(d.team_home_id);
+								return scope.colorTeam(d.team_home_id, scope.teams);
 							}
 							else if (d.team_visitor_id == scope.currentTeam.id){
-								return scope.colorTeam(d.team_visitor_id);
+								return scope.colorTeam(d.team_visitor_id, scope.teams);
 							}
 							else{
 								return "#aaaaaa"

@@ -18,9 +18,13 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$resource', '$
 	$scope.eventTooltipView = false;
 	
 
-	// ------ Initialize ------ //
+	// ------ Variable Change Watching ------ //
 
-	$scope.initialize = true;
+	// Watch these variables when they change.
+
+	$scope.daysChanged = false;
+	$scope.teamsChanged = false;
+	$scope.runEvents = false;
 
 
 
@@ -89,6 +93,14 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$resource', '$
 
 	$scope.changeYear = function(year){
 
+
+
+		// Delete previous lines amd text
+		d3.select("#line-graph").selectAll('path.line').transition().duration(0).remove();
+		d3.select("#line-graph").selectAll('text').transition().duration(0).remove();
+		d3.select("#line-graph").selectAll('path.area').transition().duration(0).remove();
+		d3.select("#line-graph").selectAll('rect').remove();
+
 		
 
 		// Get games data from the API
@@ -99,10 +111,11 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$resource', '$
 		// Get the teams data from the API
 		TeamsData.getData(year).then(function(json){
 			$scope.teams = json.data;
-			// Get days data from the API
-			DaysData.getData(year).then(function(json){
-				$scope.days = json.data;
-			});
+		});
+
+		// Get days data from the API
+		DaysData.getData(year).then(function(json){
+			$scope.days = json.data;
 		});
 
 		// Get the events data from API
