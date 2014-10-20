@@ -30,6 +30,15 @@
 				</div>
 
 			</div>
+
+
+			<! -- Loading Screen Divs -->
+			
+			<div class="spinner rotate" ng-show="loaded == false"><i class="fa fa-spinner fa-4x"></i></div>
+
+			<div class="lightCover" ng-show="loaded == false"></div>
+
+			<! -- End loading screen divs -->
 			
 			<div line-graph id="line-graph" ng-click="getTeamData" ng-mousemove="getDayGames" ng-mouseleave="removeGameTooltip"></div>
 			<game-tooltip ng-show="gameTooltipView" ng-class="{ fadeIn : gameTooltipView }"></game-tooltip>

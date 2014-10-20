@@ -29,6 +29,7 @@ baseballApp.directive("lineGraph", function($window){
 					scope.daysChanged = false;
 					scope.teamsChanged = false;
 					scope.runEvents = true;
+					scope.loaded = true;
 					
 				};
 			});
@@ -50,6 +51,7 @@ baseballApp.directive("lineGraph", function($window){
 					scope.daysChanged = false;
 					scope.teamsChanged = false;
 					scope.runEvents = true;
+					scope.loaded = true;
 
 				};
 			});

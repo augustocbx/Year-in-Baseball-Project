@@ -8,6 +8,9 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$resource', '$
 	$scope.teamView = false;
 	$scope.thisTeam;
 
+	// The 'loaded' view indicates whether or not the data has been loaded; important for the spinner
+	$scope.loaded = false;
+
 
 	// -- Tool Tips -- //
 
@@ -105,7 +108,7 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$resource', '$
 
 	$scope.changeYear = function(year){
 
-
+		$scope.loaded = false;
 
 		// Delete previous lines amd text
 		d3.select("#line-graph").selectAll('path.line').transition().duration(0).remove();

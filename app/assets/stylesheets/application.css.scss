@@ -258,6 +258,25 @@ h4{
   font-family: 'Open Sans Condensed', sans-serif;
 }
 
+/* ------ Spinner ------ */
+
+.spinner{
+	position: absolute;
+	top: 500px;
+	width: 100%;
+	text-align: center;
+	color: #fdae61;
+	z-index: 3;
+}
+
+.lightCover{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(255,255,255,.8);
+	z-index: 2;
+}
+
 
 /* Animations */
 
@@ -284,4 +303,45 @@ h4{
 .fadeIn {
   -webkit-animation: fadeIn .4s;
   animation: fadeIn .4s;
+}
+
+@-webkit-keyframes rotate {
+  0% {
+    -webkit-transform-origin: center;
+    transform-origin: center;
+    -webkit-transform: rotate3d(0, 0, 1, -360deg);
+    transform: rotate3d(0, 0, 1, -360deg);
+  }
+
+  100% {
+    -webkit-transform-origin: center;
+    transform-origin: center;
+    -webkit-transform: none;
+    transform: none;
+  }
+}
+
+@keyframes rotate {
+  0% {
+    -webkit-transform-origin: center;
+    -ms-transform-origin: center;
+    transform-origin: center;
+    -webkit-transform: rotate3d(0, 0, 1, -360deg);
+    -ms-transform: rotate3d(0, 0, 1, -360deg);
+    transform: rotate3d(0, 0, 1, -360deg);
+  }
+
+  100% {
+    -webkit-transform-origin: center;
+    -ms-transform-origin: center;
+    transform-origin: center;
+    -webkit-transform: none;
+    -ms-transform: none;
+    transform: none;
+  }
+}
+
+.rotate {
+  -webkit-animation: rotate 2s linear infinite;
+  animation: rotate 2s linear infinite;
 }
