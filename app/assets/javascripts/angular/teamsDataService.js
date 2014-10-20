@@ -3,7 +3,7 @@ baseballApp.factory('TeamsData', ['$http', function($http){
 	var teams = [];
 
 	teams.getData = function(value){
-		var url = 'http://localhost:3000/';
+		var url = 'http://yearinbaseball.herokuapp.com/';
 		var endpoint = url + 'api/years/' + value + '/teams';
 		return $http({ method: 'GET', url: endpoint });
 	};
