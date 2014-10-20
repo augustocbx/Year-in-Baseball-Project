@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
 
   scope '/api' do
-    resources :years do
+    resources :years, defaults: {format: :json} do
       resources :teams, defaults: {format: :json}
       resources :games, defaults: {format: :json}
       resources :days, defaults: {format: :json}

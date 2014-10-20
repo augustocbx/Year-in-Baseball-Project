@@ -1,4 +1,4 @@
-baseballApp.controller('BaseballController', ['$scope', '$http', '$resource', '$q', '$timeout', 'GamesData', 'DaysData', 'TeamsData', 'EventsData', function($scope, $http, $resource, $q, $timeout, GamesData, DaysData, TeamsData, EventsData){
+baseballApp.controller('BaseballController', ['$scope', '$http', '$resource', '$q', '$timeout', 'GamesData', 'DaysData', 'TeamsData', 'EventsData', 'YearData', function($scope, $http, $resource, $q, $timeout, GamesData, DaysData, TeamsData, EventsData, YearData){
 
 	
 	// -------- Views -------- //
@@ -86,6 +86,18 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$resource', '$
 	});
 
 
+	// --- Year API --- //
+
+	// The year API contains data on the description of the given year.
+
+	$scope.yearData = []
+
+	// Get the events data from API
+	YearData.getData($scope.year).then(function(json){
+		$scope.yearData = json.data;
+	});
+
+
 	// -------- Functions -------- //
 
 
@@ -121,6 +133,11 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$resource', '$
 		// Get the events data from API
 		EventsData.getData(year).then(function(json){
 			$scope.events = json.data;
+		});
+
+		// Get the events data from API
+		YearData.getData(year).then(function(json){
+			$scope.yearData = json.data;
 		});
 
 	};

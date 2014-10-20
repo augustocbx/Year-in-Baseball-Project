@@ -22,6 +22,30 @@
 	margin: 0 auto;
 }
 
+.yearsDiv{
+	width: 220px;
+	height: 100px;
+	margin: 0 auto;
+
+	.yearClick{
+		width: 80px;
+		height: 33px;
+		font-size: 26px;
+		padding: 22px 0;
+		color: white;
+		background-color: black;
+		border-radius: 50%;
+		float: left;
+		text-align: center;
+		margin: 0 15px;
+		cursor: pointer;
+	}
+
+	.yearClick:hover{
+		background-color: #ccc;
+	}
+}
+
 #visContainer{
 	position: relative;
 	margin: 0 auto;
@@ -43,7 +67,7 @@
 	h3{
 		font-size: 24px;
 		font-weight: 300;
-		margin: 0 0 80px;
+		margin: 0 0 40px;
 		text-align: center;
 	}
 
