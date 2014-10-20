@@ -139,9 +139,9 @@ baseballApp.directive("timeline", function($window){
 				// Draw the line
 				svg.append("rect")
 						.attr("class", "timeline")
-						.attr("x", 0)
+						.attr("x", 10)
 						.attr("y", 10)
-						.attr("width", width-rightPadding)
+						.attr("width", width-rightPadding-10)
 						.attr("height", 2)
 						.attr("fill", "rgba(70,70,70,1)");
 
