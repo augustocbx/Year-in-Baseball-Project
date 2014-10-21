@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141020161243) do
+ActiveRecord::Schema.define(version: 20141021054130) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -62,6 +62,8 @@ ActiveRecord::Schema.define(version: 20141020161243) do
     t.string   "home_day_id"
     t.string   "visitor_day_id"
     t.string   "year_id"
+    t.string   "team_home_abbr"
+    t.string   "team_visitor_abbr"
   end
 
   create_table "teams", force: true do |t|
@@ -74,6 +76,7 @@ ActiveRecord::Schema.define(version: 20141020161243) do
     t.integer  "standing"
     t.string   "year_id"
     t.text     "description"
+    t.string   "abbr"
   end
 
   create_table "years", force: true do |t|

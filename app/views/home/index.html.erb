@@ -9,6 +9,7 @@
 
 			<div class="yearsDiv group">
 				<div class="yearClick" ng-click="changeYear('1908')"><div class="yearTitle">1908</div> <div class="divisionTitle">NL</div></div>
+				<div class="yearClick" ng-click="changeYear('1978')"><div class="yearTitle">1978</div> <div class="divisionTitle">AL East</div></div>
 				<div class="yearClick" ng-click="changeYear('2013')"><div class="yearTitle">2013</div> <div class="divisionTitle">NL West</div></div>
 			</div>
 
@@ -16,6 +17,7 @@
 				
 				<div id="seasonIntro" ng-show="teamView === false">
 					<h2 ng-show="yearData.id == '1908'">1908 National League</h2>
+					<h2 ng-show="yearData.id == '1978'">1978 American League East</h2>
 					<h2 ng-show="yearData.id == '2013'">2013 National League West</h2>
 					<div class="teamDescr">{{yearData.description}}</div>
 				</div>
@@ -26,7 +28,7 @@
 				</div>
 
 				<div class="teamTags">
-					<team-tag class="teamTag {{t.id}}" ng-repeat="t in teams" id="{{t.id}}" ng-click="getThisTeam(t.id)">{{t.id}}</team-tag>
+					<team-tag class="teamTag {{t.id}}" ng-repeat="t in teams" id="{{t.id}}" ng-click="getThisTeam(t.id)">{{t.abbr}}</team-tag>
 				</div>
 
 			</div>

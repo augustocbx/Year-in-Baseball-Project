@@ -171,6 +171,9 @@ baseballApp.controller('BaseballController', ['$scope', '$http', '$resource', '$
 		if (teams.length == 8){
 			var colors = ["#006837","#1a9850","#66bd63","#a6d96a","#fee08b", "#fdae61", "#f46d43", "#a50026"]  ;
 		}
+		else if (teams.length == 7){
+			var colors = ["#006837","#1a9850","#66bd63","#a6d96a","#fee08b", "#f46d43", "#a50026"]  ;
+		}
 		else if (teams.length == 5){
 			var colors = ["#006837","#66bd63","#fee08b", "#f46d43", "#a50026"]  ;
 		}
